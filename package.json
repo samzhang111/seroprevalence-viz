@@ -1,0 +1,22 @@
+{
+  "name": "serology",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-loader": "^8.1.0",
+    "d3": "^5.15.1",
+    "file-saver": "^2.0.2",
+    "function-plot": "^1.19.1",
+    "jstat": "^1.9.2",
+    "lodash": "^4.17.15",
+    "mathjs": "^6.6.3",
+    "numjs": "^0.16.0",
+    "webpack": "^4.42.1"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.11"
+  }
+}
