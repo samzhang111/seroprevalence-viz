@@ -59,22 +59,43 @@ export const makeChartProps = data => {
   return {x, y, density, thresholds, bins, line, xAxis, yAxis, data}
 }
 
-export const updateBars = (rects, chartProps) => {
+export const updateBars = (rects, chartProps, skipTransition=false) => {
   let {bins, x, y, data} = chartProps
+
+  if (skipTransition) {
+    return rects.data(bins)
+      .join("rect")
+	.attr("x", d => x(d.x0) + 1)
+	.attr("y", d => y(d.length / data.length))
+	.attr("width", d => x(d.x1) - x(d.x0) - 1)
+	.attr("height", d => y(0) - y(d.length / data.length))
+  }
 
   return rects.data(bins)
     .join("rect")
+      .transition(1000)
       .attr("x", d => x(d.x0) + 1)
       .attr("y", d => y(d.length / data.length))
       .attr("width", d => x(d.x1) - x(d.x0) - 1)
       .attr("height", d => y(0) - y(d.length / data.length))
 }
 
-export const updateDensity = (path, chartProps) => {
+export const updateDensity = (path, chartProps, skipTransition=false) => {
   let {density, line} = chartProps
+
+  if (skipTransition) {
+    return path.datum(density)
+      .join("path")
+	.attr("fill", "none")
+	.attr("stroke", "#000")
+	.attr("stroke-width", 1.5)
+	.attr("stroke-linejoin", "round")
+	.attr("d", line)
+  }
 
   return path.datum(density)
     .join("path")
+      .transition(1000)
       .attr("fill", "none")
       .attr("stroke", "#000")
       .attr("stroke-width", 1.5)
@@ -90,11 +111,11 @@ export const makeChart = (chartProps) => {
     .attr("fill", "#bbb")
     .selectAll("rect")
 
-  updateBars(rects, chartProps)
+  updateBars(rects, chartProps, true)
 
   const path = svg.append("path")
 
-  updateDensity(path, chartProps)
+  updateDensity(path, chartProps, true)
 
   let gXAxis = svg.append("g").call(chartProps.xAxis);
   let gYAxis = svg.append("g").call(chartProps.yAxis);

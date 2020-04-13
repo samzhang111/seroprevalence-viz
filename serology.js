@@ -114,10 +114,7 @@ function svgString2Image( svgString, width, height, format, callback ) {
 	image.src = imgsrc;
 }
 
-let data = samplePosterior(16, 84, 1 - 0.975, 1 - 0.93, nsamples)
-let chartProps = makeChartProps(data)
-const chart = makeChart(chartProps)
-d3.select("#posteriorviz").append(() => chart.svg.node())
+let data, chartProps, chart, nplus, nminus, u, v
 
 const numposElem = document.getElementById("numpos")
 const numnegElem = document.getElementById("numneg")
@@ -125,7 +122,18 @@ const sensElem = document.getElementById("sensitivity")
 const specElem = document.getElementById("specificity")
 //const numsampsElem = document.getElementById("numsamps")
 
-let nplus, nminus, u, v
+nplus = parseInt(numposElem.value)
+nminus = parseInt(numnegElem.value)
+u = 1 - parseFloat(sensElem.value)
+v = 1 - parseFloat(specElem.value)
+
+data = samplePosterior(nplus, nminus, u, v, nsamples)
+chartProps = makeChartProps(data)
+chart = makeChart(chartProps)
+
+const createChart = () => {
+  d3.select("#posteriorviz").append(() => chart.svg.node())
+}
 
 const updateValues = () => {
   //nsamples = parseInt(numsampsElem.value)
@@ -148,7 +156,7 @@ const updateValues = () => {
   gYAxis.call(chartProps.yAxis)
 }
 
-window.addEventListener('load', updateValues)
+window.addEventListener('load', createChart)
 numposElem.addEventListener('input', updateValues)
 numnegElem.addEventListener('input', updateValues)
 sensElem.addEventListener('input', updateValues)
