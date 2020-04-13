@@ -3,19 +3,19 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     entry: "./serology.js",
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
           title: 'Seroprevalence estimation',
           template: './index.html',
-          filename: 'serology-dev.html'
+          filename: 'serology.html'
         })
     ],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: "[name].[contenthash]-dev.js",
+        filename: "[name].[contenthash].js",
     },
     module: {
       rules: [
