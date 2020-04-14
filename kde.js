@@ -1,6 +1,17 @@
 import * as d3 from "d3"
 import {jStat} from "jstat"
 
+function silvermanish(data) {
+  // Silverman's method for estimating the bandwidth, except enlarged by a factor of 4/3 to be smoother.
+  // Hence, "Silverman-ish"...
+
+  let stdev = jStat.stdev(data)
+  let quartiles = jStat.quartiles(data)
+  let iqr = quartiles[2] - quartiles[0]
+
+  return 1.2*Math.min(stdev, iqr/1.34) * data.length**(-0.2)
+}
+
 function kde(kernel, thresholds, data) {
   return thresholds.map(t => [t, d3.mean(data, d => kernel(t - d))]);
 }
@@ -12,9 +23,9 @@ function gaussian(bandwidth) {
 const width = 500, height = 250
 const margin = ({top: 20, right: 30, bottom: 30, left: 40})
 
-export const makeChartProps = data => {
+export const makeChartProps = (data, xlabel) => {
   const x = d3.scaleLinear()
-      .domain([d3.max([0, d3.min(data) - 0.1]), d3.min([1, d3.max(data) + 0.1])]).nice()
+      .domain([d3.max([0, d3.min(data) - 0.1]), d3.min([1.3, d3.max(data) + 0.1])]).nice()
       .range([margin.left, width - margin.right])
 
   const thresholds = x.ticks(100)
@@ -24,7 +35,9 @@ export const makeChartProps = data => {
       .thresholds(thresholds)
   (data)
 
-  let density = kde(gaussian(0.03), thresholds, data)
+  const bandwidth = silvermanish(data)
+
+  let density = kde(gaussian(bandwidth), thresholds, data)
 
   const maxDensity = d3.max(_.unzip(density)[1])
   const maxBarHeight = d3.max(bins, d => d.length) / data.length
@@ -42,29 +55,41 @@ export const makeChartProps = data => {
 
   const xAxis = g => g
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x).tickFormat((d) => ( (d <= 1) ? d : "")))
       .call(g => g.append("text")
 	  .attr("x", width - margin.right)
 	  .attr("y", -6)
 	  .attr("fill", "#000")
 	  .attr("text-anchor", "end")
 	  .attr("font-weight", "bold")
-	  .text("Seroprevalence"))
+	  .text(xlabel))
 
   const yAxis = g => g
       .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y).ticks(null, "%"))
-      .call(g => g.select(".domain").remove())
+      .call(d3.axisLeft(y).tickFormat("").tickSizeOuter(0))
 
   return {x, y, density, thresholds, bins, line, xAxis, yAxis, data}
 }
 
-export const updateBars = (rects, chartProps, skipTransition=false) => {
+export const updateChart = (chart, chartProps, skipTransition=false) => {
+  let {svg, gXAxis, gYAxis} = chart
+
+  let rects = svg.selectAll("rect")
+  let path = svg.select("path")
+  updateBars(rects, chartProps, skipTransition)
+  updateDensity(path, chartProps, skipTransition)
+
+  gXAxis.call(chartProps.xAxis)
+  //gYAxis.call(chartProps.yAxis)
+}
+
+const updateBars = (rects, chartProps, skipTransition=false) => {
   let {bins, x, y, data} = chartProps
 
   if (skipTransition) {
     return rects.data(bins)
       .join("rect")
+	.attr("fill", "#bbb")
 	.attr("x", d => x(d.x0) + 1)
 	.attr("y", d => y(d.length / data.length))
 	.attr("width", d => x(d.x1) - x(d.x0) - 1)
@@ -73,6 +98,7 @@ export const updateBars = (rects, chartProps, skipTransition=false) => {
 
   return rects.data(bins)
     .join("rect")
+      .attr("fill", "#bbb")
       .transition(1000)
       .attr("x", d => x(d.x0) + 1)
       .attr("y", d => y(d.length / data.length))
@@ -80,7 +106,7 @@ export const updateBars = (rects, chartProps, skipTransition=false) => {
       .attr("height", d => y(0) - y(d.length / data.length))
 }
 
-export const updateDensity = (path, chartProps, skipTransition=false) => {
+const updateDensity = (path, chartProps, skipTransition=false) => {
   let {density, line} = chartProps
 
   if (skipTransition) {
@@ -108,7 +134,6 @@ export const makeChart = (chartProps) => {
       .attr("viewBox", [0, 0, width, height]);
 
   const rects = svg.append("g")
-    .attr("fill", "#bbb")
     .selectAll("rect")
 
   updateBars(rects, chartProps, true)

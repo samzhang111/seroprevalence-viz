@@ -13,9 +13,12 @@ export const computePosterior = (r, nplus, nminus, u, v) => {
   return numerator/denominator
 }
 
-export const computeLogPosterior = (r, nplus, nminus, u, v) => {
-  const numerator = nplus*Math.log(u + r*(1 - u - v)) + nminus*Math.log(1 - u - r*(1-u-v))
+export const computeLogPosteriorNumerator = (r, nplus, nminus, u, v) => (
+  nplus*Math.log(u + r*(1 - u - v)) + nminus*Math.log(1 - u - r*(1-u-v))
+)
 
+export const computeLogPosterior = (r, nplus, nminus, u, v) => {
+  const numerator = computeLogPosteriorNumerator(r, nplus, u, v)
   let a = jStat.ibeta(u, 1+nplus, 1+nminus) - jStat.ibeta(1-v, 1 + nplus, 1 + nminus)
   let b = u + v - 1
 
@@ -27,6 +30,36 @@ export const computeLogPosterior = (r, nplus, nminus, u, v) => {
   const denominator = Math.log(a) - Math.log(b)
 
   return numerator - denominator
+}
+
+export const samplePosteriorLog = (pos, neg, u, v, size) => {
+  const rm = (pos/(pos+neg)-u)/(1-u-v)
+
+  let mCands = [
+    computeLogPosteriorNumerator(0,pos,neg,u,v),
+    computeLogPosteriorNumerator(1,pos,neg,u,v),
+  ]
+
+  if (rm > 0 && rm < 1) {
+    mCands.push(computeLogPosteriorNumerator(rm,pos,neg,u,v))
+  }
+
+  const logM = jStat.max(mCands)
+
+  let accepted = []
+  let acceptances = 0
+
+  while (acceptances < size) {
+    let proposal = Math.random()
+    let logrv = Math.log(Math.random())
+
+    if (logrv < computeLogPosteriorNumerator(proposal, pos, neg, u, v) - logM) {
+      accepted.push(proposal)
+      acceptances += 1
+    }
+  }
+
+  return accepted
 }
 
 export const samplePosterior = (pos, neg, u, v, size) => {
