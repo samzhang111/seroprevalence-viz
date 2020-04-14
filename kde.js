@@ -25,7 +25,8 @@ const margin = ({top: 20, right: 30, bottom: 30, left: 40})
 
 export const makeChartProps = (data, xlabel) => {
   const x = d3.scaleLinear()
-      .domain([d3.max([0, d3.min(data) - 0.1]), d3.min([1.3, d3.max(data) + 0.1])]).nice()
+      .domain([0, 0.7]).nice()
+    //.domain([d3.max([0, d3.min(data) - 0.1]), d3.min([1.3, d3.max(data) + 0.1])]).nice()
       .range([margin.left, width - margin.right])
 
   const thresholds = x.ticks(100)
@@ -79,7 +80,7 @@ export const updateChart = (chart, chartProps, skipTransition=false) => {
   updateBars(rects, chartProps, skipTransition)
   updateDensity(path, chartProps, skipTransition)
 
-  gXAxis.call(chartProps.xAxis)
+  //gXAxis.call(chartProps.xAxis)
   //gYAxis.call(chartProps.yAxis)
 }
 
