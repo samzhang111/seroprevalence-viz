@@ -10,7 +10,7 @@ module.exports = {
         new HtmlWebpackPlugin({
           title: 'Seroprevalence estimation',
           template: './index.html',
-          filename: 'serology.html',
+          filename: 'covid-serology.html',
           minify: {
             collapseWhitespace: false
           }

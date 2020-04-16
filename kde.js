@@ -137,7 +137,6 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("stroke-width", 2)
     .attr("stroke", "#000")
     .attr("stroke-linecap", "round")
-    .attr("stroke-dasharray", "20 5")
 
   meanLabel
     .attr("fill", "#000")
@@ -156,7 +155,6 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("stroke-width", 1)
     .attr("stroke", "#000")
     .attr("stroke-linecap", "round")
-    .attr("stroke-dasharray", "10 5")
 
   lowerCiLabel
     .attr("fill", "#000")
@@ -175,7 +173,6 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("stroke-width", 1)
     .attr("stroke", "#000")
     .attr("stroke-linecap", "round")
-    .attr("stroke-dasharray", "10 5")
 
   upperCiLabel
     .attr("fill", "#000")
