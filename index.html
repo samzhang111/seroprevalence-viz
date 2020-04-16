@@ -6,6 +6,7 @@
 		<title>Seroprevalence estimation</title>
 	</head>
 	<body>
+	<div id="app">
 	    <table id="inputs1">
 		<tr class="row">
 		    <th class="label">Num. positive</th>
@@ -37,9 +38,10 @@
 	    </table>
 
 	    
-	    <div>Posterior probability of seroprevalence (10,000 sample draws)</div>
+	    <div id="vizlabel">Posterior probability of seroprevalence (10,000 samples), with mean and 90% credible interval.</div>
 	    <div id="posteriorviz"></div>
-	    <div id="confintervals"></div>
+
+	</div>
 
 	    <link rel="stylesheet" type="text/css" href="../serology.css" />
 	</body>

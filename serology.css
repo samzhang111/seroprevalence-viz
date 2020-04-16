@@ -1,7 +1,15 @@
+#app {
+    max-width: 50em;
+}
+
 #inputs1 {
     margin-bottom: 3em;
 }
 
 #posteriorviz {
     width: 50em;
+}
+
+#vizlabel {
+    margin-bottom: 1em;
 }
