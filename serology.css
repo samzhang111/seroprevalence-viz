@@ -1,15 +1,32 @@
 #app {
-    max-width: 50em;
+    margin: 5em 3em 5em;
+    max-width: 70em;
 }
 
-#inputs1 {
+#desc {
     margin-bottom: 3em;
 }
 
-#posteriorviz {
-    width: 50em;
+#inputs1 {
+    margin-bottom: 1em;
+}
+
+#inputs1 input {
+    width: 10em;
+}
+
+.label {
+    padding-bottom: 1.2em !important;
+}
+
+#vizcontainer {
+    padding: 3em;
 }
 
 #vizlabel {
-    margin-bottom: 1em;
+    margin: 0 0 1em 3em;
+}
+
+#downloadsvg {
+    margin: 0 4.5em;
 }

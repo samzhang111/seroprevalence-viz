@@ -156,7 +156,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("fill", "#000")
     .attr("text-anchor", "start")
     .attr("font-size", "10px")
-    .attr("x", x(mean) + 1)
+    .attr("x", x(mean) + 5)
     .attr("y", y(maxBarHeight) - 5)
     .text(`${(Math.round(mean*1000)/1000).toFixed(3)}`)
 
@@ -175,7 +175,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("fill", "#000")
     .attr("text-anchor", "end")
     .attr("font-size", "10px")
-    .attr("x", x(posteriorCi[0]) - 6)
+    .attr("x", x(posteriorCi[0]) - 4)
     .attr("y", y(maxBarHeight) - 5)
     .text(`${(Math.round(posteriorCi[0]*1000)/1000).toFixed(3)}`)
 
@@ -194,7 +194,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("fill", "#000")
     .attr("text-anchor", "start")
     .attr("font-size", "10px")
-    .attr("x", x(posteriorCi[1]))
+    .attr("x", x(posteriorCi[1]) + 5)
     .attr("y", y(maxBarHeight) + 10)
     .text(`${(Math.round(posteriorCi[1]*1000)/1000).toFixed(3)}`)
 
