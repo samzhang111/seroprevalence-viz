@@ -24,13 +24,18 @@ const initChart = () => {
   d3.select("#posteriorviz").append(() => chart.svg.node())
 }
 
+const LARGEST_N = 10000
+
 const updateValues = () => {
   nplus = parseInt(numposElem.value)
   nminus = parseInt(numnegElem.value)
   u = 1 - parseFloat(sensElem.value)
   v = 1 - parseFloat(specElem.value)
 
-  if (isNaN(nplus) || isNaN(nminus) || isNaN(u) || isNaN(v)) {
+  if (
+    isNaN(nplus) || isNaN(nminus) || isNaN(u) || isNaN(v) ||
+    nplus > LARGEST_N || nminus > LARGEST_N
+  ) {
     return
   }
 
