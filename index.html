@@ -8,36 +8,41 @@
 	</head>
 	<body>
 		<div id="app">
-			<h1>Seroprevalence calculator</h1>
-			<h4 id="desc">Given serological test results in a population sample, using a test with known sensitivity and specificity, what is the posterior distribution of seroprevalence in the population?</h4>
+			<h1>Seroprevalence calculator (beta)</h1>
+			<div id="desc">
+			<h4>Given serological test results in a population sample, using a test with known sensitivity and specificity, what is the posterior distribution of seroprevalence in the population?</h4>
+			<h5>Please report bugs with screenshots to daniel.larremore@colorado.edu.</h5>
+			</div>
+
+
 
 			<div>
 				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="inputs1">
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Num. positive</th>
+						<th class="mdl-data-table__cell--non-numeric label"># positive tests</th>
 						<td>
-							<input id="numpos" type="number" step=1 min=0 value=16 />
+							<input id="numpos" type="number" step=1 min=0 max=10000 value=16 />
 						</td>
 					</tr>
 
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Num. negative</th>
+						<th class="mdl-data-table__cell--non-numeric label"># negative tests</th>
 						<td>
-							<input id="numneg" type="number" step=1 min=0 value=84 />
+							<input id="numneg" type="number" step=1 min=0 max=10000 value=84 />
 						</td>
 					</tr>
 
 					<tr class="row">
 						<th class="mdl-data-table__cell--non-numeric label">Sensitivity</th>
 						<td>
-							<input id="sensitivity" type="number" step="0.001" min="0.01" max="0.99" value=0.93 />
+							<input id="sensitivity" type="number" step="0.001" min="0.6" max="1" value=0.93 />
 						</td>
 					</tr>
 
 					<tr class="row">
 						<th class="mdl-data-table__cell--non-numeric label">Specificity</th>
 						<td>
-							<input id="specificity" type="number" step="0.001" min="0.01" max="0.99" value=0.975 />
+							<input id="specificity" type="number" step="0.001" min="0.6" max="1" value=0.975 />
 						</td>
 					</tr>
 				</table>

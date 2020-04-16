@@ -23,9 +23,12 @@ function gaussian(bandwidth) {
 const width = 500, height = 250
 const margin = ({top: 20, right: 30, bottom: 30, left: 40})
 
+
 export const makeChartProps = (data, xlabel) => {
+  const mean = jStat.mean(data)
+  let xrange = mean < 0.6 ? [0, 0.7] : [0.45, 1.15]
   const x = d3.scaleLinear()
-      .domain([0, 0.7]).nice()
+      .domain(xrange).nice()
     //.domain([d3.max([0, d3.min(data) - 0.1]), d3.min([1.3, d3.max(data) + 0.1])]).nice()
       .range([margin.left, width - margin.right])
 
@@ -39,10 +42,7 @@ export const makeChartProps = (data, xlabel) => {
   const bandwidth = silvermanish(data)
 
   let density = kde(gaussian(bandwidth), thresholds, data)
-  const mean = jStat.mean(data)
   const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
-  
-  console.log({posteriorCi})
 
   const maxDensity = d3.max(_.unzip(density)[1])
   const maxBarHeight = d3.max(bins, d => d.length) / data.length
@@ -76,27 +76,12 @@ export const makeChartProps = (data, xlabel) => {
   return {x, y, density, thresholds, bins, line, xAxis, yAxis, data, mean, maxBarHeight, posteriorCi}
 }
 
-export const updateChart = (chart, chartProps, skipTransition=false) => {
-  let {svg, gXAxis, gYAxis} = chart
-
-  let rects = svg.selectAll("rect")
-  let densityPath = svg.select("path.density")
-  let posteriorLines = svg.select(".posteriorLines")
-
-  updateBars(rects, chartProps, skipTransition)
-  updateDensity(densityPath, chartProps, skipTransition)
-  updateMeanLine(posteriorLines, chartProps, skipTransition)
-
-  //gXAxis.call(chartProps.xAxis)
-  //gYAxis.call(chartProps.yAxis)
-}
-
 const updateBars = (rects, chartProps, skipTransition=false) => {
   let {bins, x, y, data} = chartProps
 
   rects = rects.data(bins)
     .join("rect")
-    .attr("fill", "#bbb")
+    .attr("fill", "#6495ed")
 
   rects = skipTransition ? rects : rects.transition(1000)
 
@@ -140,6 +125,8 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
   lowerCiLabel = skipTransition ? lowerCiLabel : lowerCiLabel.transition(1000)
   upperCiLine = skipTransition ? upperCiLine : upperCiLine.transition(1000)
   upperCiLabel = skipTransition ? upperCiLabel : upperCiLabel.transition(1000)
+
+  let upperCiOffset = posteriorCi[1] - posteriorCi[0] > 0.05 ? -5 : 10
 
   meanLine
     .attr("x1", x(mean))
@@ -195,12 +182,26 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("text-anchor", "start")
     .attr("font-size", "10px")
     .attr("x", x(posteriorCi[1]) + 5)
-    .attr("y", y(maxBarHeight) + 10)
+    .attr("y", y(maxBarHeight) + upperCiOffset)
     .text(`${(Math.round(posteriorCi[1]*1000)/1000).toFixed(3)}`)
 
   return lineContainer
 }
 
+export const updateChart = (chart, chartProps, skipTransition=false) => {
+  let {svg, gXAxis, gYAxis} = chart
+
+  let rects = svg.selectAll("rect")
+  let densityPath = svg.select("path.density")
+  let posteriorLines = svg.select(".posteriorLines")
+
+  updateBars(rects, chartProps, skipTransition)
+  updateDensity(densityPath, chartProps, skipTransition)
+  updateMeanLine(posteriorLines, chartProps, skipTransition)
+
+  gXAxis.call(chartProps.xAxis)
+  //gYAxis.call(chartProps.yAxis)
+}
 
 export const makeChart = (chartProps) => {
   const svg = d3.create("svg")
