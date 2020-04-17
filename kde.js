@@ -23,10 +23,32 @@ function gaussian(bandwidth) {
 const width = 500, height = 250
 const margin = ({top: 20, right: 30, bottom: 30, left: 40})
 
+const leadingZeros = (x) => {
+  let i = 0
+  while (x < 1) {
+    i += 1
+    x *= 10
+  }
+
+  return i
+}
 
 export const makeChartProps = (data, xlabel) => {
   const mean = jStat.mean(data)
-  let xrange = mean < 0.6 ? [0, 0.7] : [0.45, 1.15]
+  const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
+  const ciRange = posteriorCi[1] - posteriorCi[0]
+  let order = 10**(1-leadingZeros(ciRange))
+
+  if (order == 1) {
+    order = ciRange + 0.1
+  }
+
+  const lowerDomain = Math.max(0, mean - order)
+  const upperDomain = Math.min(1.15, mean + order)
+
+  let xrange = [lowerDomain, upperDomain]
+
+  console.log({ciRange, order, xrange})
   const x = d3.scaleLinear()
       .domain(xrange).nice()
     //.domain([d3.max([0, d3.min(data) - 0.1]), d3.min([1.3, d3.max(data) + 0.1])]).nice()
@@ -42,7 +64,6 @@ export const makeChartProps = (data, xlabel) => {
   const bandwidth = silvermanish(data)
 
   let density = kde(gaussian(bandwidth), thresholds, data)
-  const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
 
   const maxDensity = d3.max(_.unzip(density)[1])
   const maxBarHeight = d3.max(bins, d => d.length) / data.length
@@ -144,7 +165,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("font-size", "10px")
     .attr("x", x(mean) + 5)
     .attr("y", y(maxBarHeight) - 5)
-    .text(`${(Math.round(mean*1000)/1000).toFixed(3)}`)
+    .text(`${(Math.round(mean*10000)/10000).toFixed(4)}`)
 
   lowerCiLine
     .attr("x1", x(posteriorCi[0]))
@@ -162,7 +183,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("font-size", "10px")
     .attr("x", x(posteriorCi[0]) - 4)
     .attr("y", y(maxBarHeight) - 5)
-    .text(`${(Math.round(posteriorCi[0]*1000)/1000).toFixed(3)}`)
+    .text(`${(Math.round(posteriorCi[0]*10000)/10000).toFixed(4)}`)
 
   upperCiLine
     .attr("x1", x(posteriorCi[1]))
@@ -180,7 +201,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("font-size", "10px")
     .attr("x", x(posteriorCi[1]) + 5)
     .attr("y", y(maxBarHeight) + upperCiOffset)
-    .text(`${(Math.round(posteriorCi[1]*1000)/1000).toFixed(3)}`)
+    .text(`${(Math.round(posteriorCi[1]*10000)/10000).toFixed(4)}`)
 
   return lineContainer
 }
