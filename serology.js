@@ -17,7 +17,7 @@ let nminus = parseInt(numnegElem.value)
 let v = 1 - parseFloat(sensElem.value)
 let u = 1 - parseFloat(specElem.value)
 let data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
-let chartProps = makeChartProps(data, "Seroprevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
+let chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
 let chart = makeChart(chartProps)
 
 const initChart = () => {
@@ -40,7 +40,7 @@ const updateValues = () => {
   }
 
   data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
-  chartProps = makeChartProps(data, "Seroprevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
+  chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
 
   updateChart(chart, chartProps)
 }
@@ -53,7 +53,7 @@ const downloadChart = () => {
     }
 
   const html = chart.svg
-        .attr("title", "Seroprevalence")
+        .attr("title", "Prevalence")
         .attr("version", 1.0)
         .attr("xmlns", "http://www.w3.org/2000/svg")
         .node().parentNode.innerHTML;
