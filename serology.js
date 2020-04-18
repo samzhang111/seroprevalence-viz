@@ -17,7 +17,7 @@ let nminus = parseInt(numnegElem.value)
 let v = 1 - parseFloat(sensElem.value)
 let u = 1 - parseFloat(specElem.value)
 let data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
-let chartProps = makeChartProps(data, "Seroprevalence")
+let chartProps = makeChartProps(data, "Seroprevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
 let chart = makeChart(chartProps)
 
 const initChart = () => {
@@ -40,7 +40,7 @@ const updateValues = () => {
   }
 
   data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
-  chartProps = makeChartProps(data, "Seroprevalence")
+  chartProps = makeChartProps(data, "Seroprevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
 
   updateChart(chart, chartProps)
 }

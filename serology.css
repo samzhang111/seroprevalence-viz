@@ -23,10 +23,6 @@
     padding: 3em;
 }
 
-#vizlabel {
-    margin: 0 0 1em 3em;
-}
-
 #downloadsvg {
-    margin: 0 4.5em;
+    margin: 1em 4.5em 0;
 }
