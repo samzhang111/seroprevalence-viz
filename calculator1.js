@@ -16,9 +16,21 @@ let nplus = parseInt(numposElem.value)
 let nminus = parseInt(numnegElem.value)
 let v = 1 - parseFloat(sensElem.value)
 let u = 1 - parseFloat(specElem.value)
+
+const makeDisplayParams = () => {
+
+  return `# positive tests: ${nplus}
+# negative tests: ${nminus}
+
+Sensitivity: ${1 - v}
+Specificity: ${1 - u}`
+}
+
+
 let data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
 let chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
-let chart = makeChart(chartProps)
+let width = 500, height = 270
+let chart = makeChart(chartProps, {width, height, displayParams: makeDisplayParams()})
 
 const initChart = () => {
   d3.select("#posteriorviz").append(() => chart.svg.node())
@@ -42,7 +54,7 @@ const updateValues = () => {
   data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
   chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
 
-  updateChart(chart, chartProps)
+  updateChart(chart, chartProps, {displayParams: makeDisplayParams()})
 }
 
 const downloadChart = () => {
@@ -59,7 +71,7 @@ const downloadChart = () => {
         .node().parentNode.innerHTML;
 
   const blob = new Blob([html], {type: "image/svg+xml"});
-  saveAs(blob, `se=${1-u},sp=${1-v},pos=${nplus},neg=${nminus}.svg`)
+  saveAs(blob, `se=${1-v},sp=${1-u},pos=${nplus},neg=${nminus}.svg`)
 }
 
 window.addEventListener('load', initChart)
@@ -68,4 +80,3 @@ numnegElem.addEventListener('input', updateValues)
 sensElem.addEventListener('input', updateValues)
 specElem.addEventListener('input', updateValues)
 downloadElem.addEventListener('click', downloadChart)
-

@@ -4,13 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
-    entry: "./serology.js",
+    entry: ["@babel/polyfill", "./calculator2.js"],
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
           title: 'Seroprevalence estimation',
-          template: './index.html',
-          filename: 'serology-dev.html'
+          template: './calculator2.html',
+          filename: 'covid-calculator2.html',
         })
     ],
     output: {

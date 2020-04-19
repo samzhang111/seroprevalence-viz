@@ -3,22 +3,19 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'production',
-    entry: "./serology.js",
+    mode: 'development',
+    entry: ["@babel/polyfill", "./calculator1.js"],
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
           title: 'Seroprevalence estimation',
-          template: './index.html',
+          template: './calculator1.html',
           filename: 'covid-serology.html',
-          minify: {
-            collapseWhitespace: false
-          }
         })
     ],
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: "[name].[contenthash].js",
+        path: path.resolve(__dirname, 'dev-dist'),
+        filename: "[name].[contenthash]-dev.js",
     },
     module: {
       rules: [

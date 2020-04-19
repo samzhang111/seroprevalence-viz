@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+		<meta charset=utf-8>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Prevalence calculator 2</title>
+	</head>
+	<body>
+		<div id="app">
+			<h1>Prevalence calculator 2</h1>
+			<div id="desc">
+
+			<em>This interactive calculator accompanies the manuscript "Estimating SARS-CoV-2 seroprevalence and epidemiological parameters with uncertainty from serological surveys", which is available as a <a href="https://dash.harvard.edu/handle/1/42659939">preprint</a>. This work is not yet peer reviewed.
+			</em>
+
+			<h5>Given test results in a population sample, and the test's calibration data, what is the posterior distribution of prevalence in the population, test sensitivity, and test specificity?</h5>
+			</div>
+
+			<div id="inputs">
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+					<th>Field test results</th>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># positive tests</th>
+						<td>
+							<input id="numpos" type="number" step=1 min=0 max=10000 value=16 />
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># negative tests</th>
+						<td>
+							<input id="numneg" type="number" step=1 min=0 max=10000 value=84 />
+						</td>
+					</tr>
+				</table>
+
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+					<th>Test calibration results</th>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># true positives</th>
+						<td>
+							<input id="tp" type="number" step=1 min=0 value=279 />
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># false positives</th>
+						<td>
+							<input id="fp" type="number" step=1 min=0 value=25 />
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># true negatives</th>
+						<td>
+							<input id="tn" type="number" step=1 min=0 value=975 />
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># false negatives</th>
+						<td>
+							<input id="fn" type="number" step=1 min=0 value=21 />
+						</td>
+					</tr>
+				</table>
+
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+					<th>MCMC settings</th>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label"># samples</th>
+						<td>
+							<input id="numsamps" type="number" step=1 min=0 value=1000 />
+						</td>
+					</tr>
+				</table>
+
+				<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="runsampling">Run sampling</button>
+				<div id="samplingProgress" class="mdl-progress mdl-js-progress"></div>
+
+			</div>
+
+			<div id="vizcontainer" class="mdl-shadow--4dp">
+				<div id="posteriorviz"></div>
+				<div id="sensviz"></div>
+				<div id="specviz"></div>
+				<button class="mdl-button mdl-js-button mdl-button--raised" id="downloadsvg">Download image</button>
+			</div>
+
+			<h5>This is in beta. Please report bugs with screenshots to daniel.larremore@colorado.edu. The source code for this visualization is on <a href="https://github.com/samzhang111/seroprevalence-viz">Github</a>.</h5>
+		</div>
+
+
+		<link rel="stylesheet" type="text/css" href="../calc2.css" />
+		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-deep_purple.min.css" />
+		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	</body>
+</html>

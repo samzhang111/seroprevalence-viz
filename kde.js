@@ -20,7 +20,8 @@ function gaussian(bandwidth) {
   return x => jStat.normal.pdf(x/bandwidth, 0, 1)
 }
 
-const width = 500, height = 270
+let width = 500, height = 270
+
 const margin = ({top: 20, right: 30, bottom: 50, left: 40})
 
 const leadingZeros = (x) => {
@@ -37,7 +38,8 @@ export const makeChartProps = (data, xlabel, settings) => {
   const mean = jStat.mean(data)
   const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
   const ciRange = posteriorCi[1] - posteriorCi[0]
-  let order = 10**(1-leadingZeros(ciRange))
+
+  let order = ciRange == 0 ? 1 : 10**(1-leadingZeros(ciRange))
 
   if (order == 1) {
     order = ciRange + 0.1
@@ -95,7 +97,7 @@ export const makeChartProps = (data, xlabel, settings) => {
       .attr("transform", `translate(${margin.left},0)`)
       .call(d3.axisLeft(y).tickFormat("").tickSizeOuter(0))
 
-  return {x, y, density, thresholds, bins, line, xAxis, yAxis, data, mean, maxBarHeight, posteriorCi, settings}
+  return {x, y, density, thresholds, bins, line, xAxis, yAxis, data, mean, maxBarHeight, posteriorCi, settings, xlabel}
 }
 
 const updateBars = (rects, chartProps, skipTransition=false) => {
@@ -207,7 +209,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
   return lineContainer
 }
 
-export const updateChart = (chart, chartProps, skipTransition=false) => {
+export const updateChart = (chart, chartProps, settings, skipTransition=false) => {
   let {svg, gXAxis, gYAxis} = chart
 
   let rects = svg.selectAll("rect")
@@ -218,22 +220,17 @@ export const updateChart = (chart, chartProps, skipTransition=false) => {
   updateBars(rects, chartProps, skipTransition)
   updateDensity(densityPath, chartProps, skipTransition)
   updateMeanLine(posteriorLines, chartProps, skipTransition)
-  updateSettings(settingsContainer, chartProps)
+  updateSettings(settingsContainer, settings)
 
   gXAxis.call(chartProps.xAxis)
   //gYAxis.call(chartProps.yAxis)
 }
 
-export const updateSettings = (settingsContainer, chartProps) => {
-  const {nplus, nminus, sens, spec} = chartProps.settings
-
-  let npc = settingsContainer.select(".np")
-  let nmc = settingsContainer.select(".nm")
-  let sensc = settingsContainer.select(".sens")
-  let specc = settingsContainer.select(".spec")
+export const updateSettings = (settingsContainer, settings) => {
+  let text = settingsContainer.select(".settingsText")
   let params = settingsContainer.select(".params")
 
-  const settingsOffset = 100
+  const settingsOffset = 50
   const settingsGap = 15
 
   params
@@ -245,44 +242,30 @@ export const updateSettings = (settingsContainer, chartProps) => {
     .attr("text-decoration", "underline")
   .text("Input Parameters:")
 
-  npc
-    .attr("x", width - margin.right)
-    .attr("y", settingsOffset)
-    .attr("fill", "#000")
-    .attr("text-anchor", "end")
-    .attr("font-size", "10")
-  .text(`# positive tests: ${nplus}`)
+  text.data([settings.displayParams])
+      .attr("x", width - margin.right)
+      .attr("y", settingsOffset)
+      .attr("text-anchor", "end")
+      .attr("fill", "#000")
+      .attr("font-size", "10")
 
-  nmc
-    .attr("x", width - margin.right)
-    .attr("y", settingsOffset + settingsGap)
-    .attr("fill", "#000")
-    .attr("text-anchor", "end")
-    .attr("font-size", "10")
-  .text(`# negative tests: ${nminus}`)
-
-  sensc
-    .attr("x", width - margin.right)
-    .attr("y", settingsOffset + 3*settingsGap)
-    .attr("fill", "#000")
-    .attr("text-anchor", "end")
-    .attr("font-size", "10")
-  .text(`Sensitivity: ${sens}`)
-
-  specc
-    .attr("x", width - margin.right)
-    .attr("y", settingsOffset + 4*settingsGap)
-    .attr("fill", "#000")
-    .attr("text-anchor", "end")
-    .attr("font-size", "10")
-  .text(`Specificity: ${spec}`)
-
-
+  let lines = text.selectAll("tspan.settingsLine")
+      .data(d => d.split("\n"))
+      .join("tspan")
+      .attr("class", "settingsLine")
+      .text(d => d)
+      .attr("x", width - margin.right)
+      .attr("text-anchor", "end")
+      .attr("dy", 15);
 }
 
-export const makeChart = (chartProps) => {
-  const svg = d3.create("svg")
+export const makeChart = (chartProps, settings={}) => {
+  width = settings.width || width
+  height = settings.height || height
+
+  let svg = d3.create("svg")
       .attr("viewBox", [0, 0, width, height]);
+
 
   const rects = svg.append("g")
     .selectAll("rect")
@@ -306,48 +289,58 @@ export const makeChart = (chartProps) => {
 
   updateMeanLine(posteriorLineContainer, chartProps, true)
 
-  const settingsContainer = svg.append("g")
-  settingsContainer.attr("class", "settings")
-  settingsContainer.append("text").attr("class", "np")
-  settingsContainer.append("text").attr("class", "nm")
-  settingsContainer.append("text").attr("class", "sens")
-  settingsContainer.append("text").attr("class", "spec")
-  settingsContainer.append("text").attr("class", "params")
-  updateSettings(settingsContainer, chartProps)
+  if (settings.displayParams) {
+    const settingsContainer = svg.append("g")
+    settingsContainer.attr("class", "settings")
+
+    settingsContainer.append("text").attr("class", "params")
+    settingsContainer.append("text").attr("class", "settingsText")
+    updateSettings(settingsContainer, settings)
+  }
 
   let footerContainer = svg.append("g")
-  let linkc = footerContainer.append("text").attr("class", "link")
-  let citec1 = footerContainer.append("text").attr("class", "cite1")
-  let citec2 = footerContainer.append("text").attr("class", "cite2")
+  let xlabelc = footerContainer.append("text").attr("class", "xlabel")
+  xlabelc.append("text")
+      .attr("x", width - margin.right)
+      .attr("y", - 6)
+      .attr("fill", "#000")
+      .attr("text-anchor", "end")
+      .attr("font-weight", "bold")
+    .text(chartProps.xlabel)
 
-  linkc
-    .attr("x", width - margin.right)
-    .attr("y", height - 23)
-    .attr("fill", "#000")
-    .attr("text-anchor", "end")
-    .attr("font-size", "7")
-    .attr("style", "white-space: pre")
-    .text(`10,000 posterior draws, with mean and 90% credible interval.        Generated at https://larremorelab.github.io/covid-serology`)
+  if (!settings.hideFooter) {
+    let linkc = footerContainer.append("text").attr("class", "link")
+    let citec1 = footerContainer.append("text").attr("class", "cite1")
+    let citec2 = footerContainer.append("text").attr("class", "cite2")
 
-  citec1
-    .attr("x", margin.right)
-    .attr("y", height - 10)
-    .attr("fill", "#000")
-    .attr("text-anchor", "start")
-    .attr("font-size", "7")
-    .attr("style", "white-space: pre")
-    .text(`Citation:`)
+    linkc
+      .attr("x", width - margin.right)
+      .attr("y", height - 23)
+      .attr("fill", "#000")
+      .attr("text-anchor", "end")
+      .attr("font-size", "7")
+      .attr("style", "white-space: pre")
+      .text(`${Number(chartProps.data.length).toLocaleString()} posterior draws, with mean and 90% credible interval.        Generated at https://larremorelab.github.io/covid-serology`)
 
-  citec2
-    .attr("x", margin.right)
-    .attr("y", height - 3)
-    .attr("fill", "#000")
-    .attr("text-anchor", "start")
-    .attr("font-size", "7")
-    .attr("style", "white-space: pre")
-    .text(`Larremore et al., Estimating SARS-CoV-2 seroprevalence and epidemiological parameters with uncertainty from serological surveys (2020).`)
+    citec1
+      .attr("x", margin.right)
+      .attr("y", height - 10)
+      .attr("fill", "#000")
+      .attr("text-anchor", "start")
+      .attr("font-size", "7")
+      .attr("style", "white-space: pre")
+      .text(`Citation:`)
 
+    citec2
+      .attr("x", margin.right)
+      .attr("y", height - 3)
+      .attr("fill", "#000")
+      .attr("text-anchor", "start")
+      .attr("font-size", "7")
+      .attr("style", "white-space: pre")
+      .text(`Larremore et al., Estimating SARS-CoV-2 seroprevalence and epidemiological parameters with uncertainty from serological surveys (2020).`)
 
+  }
 
   let gXAxis = svg.append("g").call(chartProps.xAxis);
   let gYAxis = svg.append("g").call(chartProps.yAxis);

@@ -96,4 +96,115 @@ export const samplePosterior = (pos, neg, u, v, size) => {
   )[0], size)
 }
 
+const briefPause = (x) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(x);
+    }, 1);
+  });
+}
 
+export const samplePosteriorMcmc = async (samps, pos, n, tp, tn, fp, fn, progressCallback=()=>{}) => {
+  let sp = tn/(tn + fp)
+  let se = tp/(tn + fp)
+  let r = (pos + 1)/(n + 2)
+
+  let rPosterior = []
+  let sePosterior = []
+  let spPosterior = []
+
+  // mcmc tuning parameters; larger values decrease variability in proposals
+  // burn_in must be multiple of thin
+  const delta_r = 100
+  const delta_sp = 100
+  const delta_se = 100
+  const thin = 50
+  const burn_in = 2*thin
+
+  const settings = {delta_r, delta_sp, delta_se, pos, n, fp, tp, fn, tn}
+
+  const totalItersProg = (samps*thin + burn_in)
+  progressCallback(0)
+  await briefPause()
+
+  let results = await innerLoop(r, sp, se, settings, burn_in)
+  progressCallback(burn_in / totalItersProg)
+  await briefPause()
+
+  r = results.r
+  se = results.se
+  sp = results.sp
+  let prog = 0
+
+  for (let i=1; i<=samps; i++) {
+    results = await innerLoop(r, sp, se, settings, thin)
+    r = results.r
+    se = results.se
+    sp = results.sp
+
+    rPosterior.push(r)
+    sePosterior.push(se)
+    spPosterior.push(sp)
+
+    prog = parseInt(100*(i + burn_in/thin) / (samps + burn_in/thin))
+
+    if (i % 100 == 0) {
+      progressCallback(prog)
+      await briefPause()
+    }
+  }
+  progressCallback(prog)
+  progressCallback(0)
+
+  return {rPosterior, sePosterior, spPosterior}
+}
+
+const innerLoop = async (r, se, sp, settings, innerIters) => {
+  const {delta_r, delta_sp, delta_se, pos, n, fp, tp, fn, tn} = settings
+
+  for (let s=1; s<innerIters; s++) {
+
+    let r_prop = jStat.beta.sample(r*delta_r, (1-r)*delta_r)
+
+    let ar_r = Math.log(jStat.binomial.pdf(pos, n, r_prop*se + (1-r_prop)*(1-sp))) -
+        Math.log(jStat.binomial.pdf(pos,n,r*se+(1-r)*(1-sp)))+
+        Math.log(jStat.beta.pdf(r, r_prop*delta_r, (1-r_prop)*delta_r))-
+        Math.log(jStat.beta.pdf(r_prop,r*delta_r,(1-r)*delta_r))
+
+    let rv = Math.log(jStat.uniform.sample(0, 1))
+
+    if (rv < ar_r) {
+      r = r_prop
+    }
+
+    const se_prop = jStat.beta.sample(se*delta_se, (1-se)*delta_se)
+    const ar_se = Math.log(jStat.binomial.pdf(pos,n,r*se_prop+(1-r)*(1-sp)))-
+      Math.log(jStat.binomial.pdf(pos,n,r*se+(1-r)*(1-sp)))+
+      Math.log(jStat.binomial.pdf(tp,(tp+fn),se_prop))-
+      Math.log(jStat.binomial.pdf(tp,(tp+fn),se))+
+      Math.log(jStat.beta.pdf(se,se_prop*delta_se,(1-se_prop)*delta_se))-
+      Math.log(jStat.beta.pdf(se_prop,se*delta_se,(1-se)*delta_se))
+
+    rv = Math.log(jStat.uniform.sample(0, 1))
+    if(rv < ar_se){
+      se = se_prop
+    }
+
+    const sp_prop = jStat.beta.sample(sp*delta_sp,(1-sp)*delta_sp)
+    const ar_sp = Math.log(jStat.binomial.pdf(pos,n,r*se+(1-r)*(1-sp_prop)))-
+      Math.log(jStat.binomial.pdf(pos,n,r*se+(1-r)*(1-sp)))+
+      Math.log(jStat.binomial.pdf(tn,(fp+tn),sp_prop))-
+      Math.log(jStat.binomial.pdf(tn,(fp+tn),sp))+
+      Math.log(jStat.beta.pdf(sp,sp_prop*delta_sp,(1-sp_prop)*delta_sp))-
+      Math.log(jStat.beta.pdf(sp_prop,sp*delta_sp,(1-sp)*delta_sp))
+
+    rv = Math.log(jStat.uniform.sample(0, 1))
+
+    if(rv < ar_sp){
+      sp = sp_prop
+    }
+
+  }
+
+  return {r, se, sp}
+}
