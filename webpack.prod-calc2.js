@@ -16,7 +16,7 @@ module.exports = {
         })
     ],
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist-calc2'),
         filename: "calc2.[contenthash].js",
     },
     module: {

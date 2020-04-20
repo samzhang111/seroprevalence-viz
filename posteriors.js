@@ -106,7 +106,7 @@ const briefPause = (x) => {
 
 export const samplePosteriorMcmc = async (samps, pos, n, tp, tn, fp, fn, progressCallback=()=>{}) => {
   let sp = tn/(tn + fp)
-  let se = tp/(tn + fp)
+  let se = tp/(tp + fn)
   let r = (pos + 1)/(n + 2)
 
   let rPosterior = []

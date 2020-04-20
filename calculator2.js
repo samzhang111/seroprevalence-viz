@@ -33,32 +33,37 @@ const updateProgressBar = async (progress) => {
   }
 }
 
-const width = 500, height = 270
+const width = 500, height = 150
 
-const makeDisplayParams = () => {
+const makeDisplayParams = () => (
+  `# positive tests: ${nplus}
+# negative tests: ${nminus}`
+)
 
-  return `# positive tests: ${nplus}
-# negative tests: ${nminus}
-
-True Positives: ${tp}
-False Positives: ${fp}
-True Negatives: ${tn}
+const makeDisplayParamsSe = () => (
+  `True Positives: ${tp}
 False Negatives: ${fn}`
-}
+)
+
+const makeDisplayParamsSp = () => (
+  `False Positives: ${fp}
+True Negatives: ${tn}`
+)
 
 
 const initChart = async () => {
   let data = await samplePosteriorMcmc(numsamps, nplus, nplus + nminus, tp, tn, fp, fn, updateProgressBar)
-  let chartProps = makeChartProps(data.rPosterior, "Prevalence", {sens: -1, spec: -1, nplus, nminus})
-  wrapperSvg = d3.create("svg")
-      .attr("viewBox", [0, 0, width, height*3]);
+
+  let chartProps = makeChartProps(data.rPosterior, "Prevalence", {nplus, nminus, width, height})
+  wrapperSvg = d3.create("svg").attr("viewBox", [0, 0, width, height*3]);
+
   chart = makeChart(chartProps, {width, height, hideFooter: true, displayParams: makeDisplayParams()})
 
-  let chartPropsSe = makeChartProps(data.sePosterior, "Sensitivity", {sens: -1, spec: -1, nplus, nminus})
-  chartSe = makeChart(chartPropsSe, {width, height, hideFooter: true, hideSettings: true})
+  let chartPropsSe = makeChartProps(data.sePosterior, "Sensitivity", {nplus, nminus, width, height})
+  chartSe = makeChart(chartPropsSe, {width, height, hideFooter: true, displayParams: makeDisplayParamsSe()})
 
-  let chartPropsSp = makeChartProps(data.spPosterior, "Specificity", {sens: -1, spec: -1, nplus, nminus})
-  chartSp = makeChart(chartPropsSp, {width, height, hideSettings: true})
+  let chartPropsSp = makeChartProps(data.spPosterior, "Specificity", {nplus, nminus, width, height})
+  chartSp = makeChart(chartPropsSp, {width, height, hideSettings: true, displayParams: makeDisplayParamsSp()})
 
   wrapperSvg.append(() => chart.svg.attr("y", -height).node())
   wrapperSvg.append(() => chartSe.svg.attr("y", 0).node())
@@ -88,13 +93,13 @@ const updateValues = async () => {
 
   let data = await samplePosteriorMcmc(numsamps, nplus, nplus + nminus, tp, tn, fp, fn, updateProgressBar)
 
-  let chartProps = makeChartProps(data.rPosterior, "Prevalence", {sens: -1, spec: -1, nplus, nminus})
-  let chartPropsSe = makeChartProps(data.sePosterior, "Sensitivity", {sens: -1, spec: -1, nplus, nminus})
-  let chartPropsSp = makeChartProps(data.spPosterior, "Specificity", {sens: -1, spec: -1, nplus, nminus})
+  let chartProps = makeChartProps(data.rPosterior, "Prevalence", {nplus, nminus})
+  let chartPropsSe = makeChartProps(data.sePosterior, "Sensitivity", {nplus, nminus})
+  let chartPropsSp = makeChartProps(data.spPosterior, "Specificity", {nplus, nminus})
 
   updateChart(chart, chartProps, {displayParams: makeDisplayParams()})
-  updateChart(chartSe, chartPropsSe)
-  updateChart(chartSp, chartPropsSp)
+  updateChart(chartSe, chartPropsSe, {displayParams: makeDisplayParamsSe()})
+  updateChart(chartSp, chartPropsSp, {displayParams: makeDisplayParamsSp()})
 }
 
 const downloadChart = () => {

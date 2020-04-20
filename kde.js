@@ -20,7 +20,7 @@ function gaussian(bandwidth) {
   return x => jStat.normal.pdf(x/bandwidth, 0, 1)
 }
 
-let width = 500, height = 270
+let width, height
 
 const margin = ({top: 20, right: 30, bottom: 50, left: 40})
 
@@ -35,6 +35,9 @@ const leadingZeros = (x) => {
 }
 
 export const makeChartProps = (data, xlabel, settings) => {
+  width = settings.width || width || 500
+  height = settings.height || height || 270
+
   const mean = jStat.mean(data)
   const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
   const ciRange = posteriorCi[1] - posteriorCi[0]
@@ -216,11 +219,13 @@ export const updateChart = (chart, chartProps, settings, skipTransition=false) =
   let densityPath = svg.select("path.density")
   let posteriorLines = svg.select(".posteriorLines")
   let settingsContainer = svg.select(".settings")
+  let footerContainer = svg.select(".footer")
 
   updateBars(rects, chartProps, skipTransition)
   updateDensity(densityPath, chartProps, skipTransition)
   updateMeanLine(posteriorLines, chartProps, skipTransition)
   updateSettings(settingsContainer, settings)
+  updateFooter(footerContainer, chartProps)
 
   gXAxis.call(chartProps.xAxis)
   //gYAxis.call(chartProps.yAxis)
@@ -230,8 +235,8 @@ export const updateSettings = (settingsContainer, settings) => {
   let text = settingsContainer.select(".settingsText")
   let params = settingsContainer.select(".params")
 
-  const settingsOffset = 50
-  const settingsGap = 15
+  const settingsOffset = 40
+  const settingsGap = 10
 
   params
     .attr("x", width - margin.right)
@@ -259,9 +264,23 @@ export const updateSettings = (settingsContainer, settings) => {
       .attr("dy", 15);
 }
 
+const updateFooter = (footerContainer, chartProps) => {
+  let linkc = footerContainer.select(".link")
+
+  linkc
+    .attr("x", width - margin.right)
+    .attr("y", height - 23)
+    .attr("fill", "#000")
+    .attr("text-anchor", "end")
+    .attr("font-size", "7")
+    .attr("style", "white-space: pre")
+    .text(`${Number(chartProps.data.length).toLocaleString()} posterior draws, with mean and 90% credible interval.        Generated at https://larremorelab.github.io/covid-serology`)
+
+}
+
 export const makeChart = (chartProps, settings={}) => {
-  width = settings.width || width
-  height = settings.height || height
+  width = settings.width || width || 500
+  height = settings.height || height || 270
 
   let svg = d3.create("svg")
       .attr("viewBox", [0, 0, width, height]);
@@ -298,7 +317,7 @@ export const makeChart = (chartProps, settings={}) => {
     updateSettings(settingsContainer, settings)
   }
 
-  let footerContainer = svg.append("g")
+  let footerContainer = svg.append("g").attr("class", "footer")
   let xlabelc = footerContainer.append("text").attr("class", "xlabel")
   xlabelc.append("text")
       .attr("x", width - margin.right)
@@ -313,14 +332,7 @@ export const makeChart = (chartProps, settings={}) => {
     let citec1 = footerContainer.append("text").attr("class", "cite1")
     let citec2 = footerContainer.append("text").attr("class", "cite2")
 
-    linkc
-      .attr("x", width - margin.right)
-      .attr("y", height - 23)
-      .attr("fill", "#000")
-      .attr("text-anchor", "end")
-      .attr("font-size", "7")
-      .attr("style", "white-space: pre")
-      .text(`${Number(chartProps.data.length).toLocaleString()} posterior draws, with mean and 90% credible interval.        Generated at https://larremorelab.github.io/covid-serology`)
+    updateFooter(footerContainer, chartProps)
 
     citec1
       .attr("x", margin.right)

@@ -46,7 +46,8 @@ const updateValues = () => {
 
   if (
     isNaN(nplus) || isNaN(nminus) || isNaN(u) || isNaN(v) ||
-    nplus > LARGEST_N || nminus > LARGEST_N
+    nplus > LARGEST_N || nminus > LARGEST_N || nplus < 0 || nminus < 0 ||
+    v < 0 || u < 0 || v > 1 || u > 1
   ) {
     return
   }

@@ -14,7 +14,7 @@ module.exports = {
         })
     ],
     output: {
-        path: path.resolve(__dirname, 'dev-dist'),
+        path: path.resolve(__dirname, 'dev-dist-calc1'),
         filename: "[name].[contenthash]-dev.js",
     },
     module: {
