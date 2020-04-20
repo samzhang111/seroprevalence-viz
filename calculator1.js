@@ -5,12 +5,15 @@ import {makeChart, makeChartProps, updateChart} from "./kde"
 import {saveAs} from "file-saver"
 
 let nsamples = 10000
+let progressElemReady = false
 
 const numposElem = document.getElementById("numpos")
 const numnegElem = document.getElementById("numneg")
 const sensElem = document.getElementById("sensitivity")
 const specElem = document.getElementById("specificity")
 const downloadElem = document.getElementById("downloadsvg")
+const progressElem = document.getElementById("samplingProgress")
+const runSamplingElem = document.getElementById("runsampling")
 
 let nplus = parseInt(numposElem.value)
 let nminus = parseInt(numnegElem.value)
@@ -27,18 +30,24 @@ Specificity: ${1 - u}`
 }
 
 
-let data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
-let chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
-let width = 500, height = 270
-let chart = makeChart(chartProps, {width, height, displayParams: makeDisplayParams()})
+const updateProgressBar = async (progress) => {
+  if (progressElemReady) {
+    progressElem.MaterialProgress.setProgress(progress)
+  }
+}
 
-const initChart = () => {
+let data, chartProps, width, height, chart
+
+const initChart = async () => {
+  data = await samplePosteriorLog(nplus, nminus, u, v, nsamples, updateProgressBar)
+  chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
+  width = 500, height = 270
+  chart = makeChart(chartProps, {width, height, displayParams: makeDisplayParams()})
+
   d3.select("#posteriorviz").append(() => chart.svg.node())
 }
 
-const LARGEST_N = 10000
-
-const updateValues = () => {
+const updateValues = async () => {
   nplus = parseInt(numposElem.value)
   nminus = parseInt(numnegElem.value)
   v = 1 - parseFloat(sensElem.value)
@@ -46,13 +55,12 @@ const updateValues = () => {
 
   if (
     isNaN(nplus) || isNaN(nminus) || isNaN(u) || isNaN(v) ||
-    nplus > LARGEST_N || nminus > LARGEST_N || nplus < 0 || nminus < 0 ||
-    v < 0 || u < 0 || v > 1 || u > 1
+    nplus < 0 || nminus < 0 || v < 0 || u < 0 || v > 1 || u > 1
   ) {
     return
   }
 
-  data = samplePosteriorLog(nplus, nminus, u, v, nsamples)
+  data = await samplePosteriorLog(nplus, nminus, u, v, nsamples, updateProgressBar)
   chartProps = makeChartProps(data, "Prevalence", {sens: 1 - v, spec: 1 - u, nplus, nminus})
 
   updateChart(chart, chartProps, {displayParams: makeDisplayParams()})
@@ -75,9 +83,11 @@ const downloadChart = () => {
   saveAs(blob, `se=${1-v},sp=${1-u},pos=${nplus},neg=${nminus}.svg`)
 }
 
+progressElem.addEventListener('mdl-componentupgraded', function() {
+  progressElemReady = true
+})
+
 window.addEventListener('load', initChart)
-numposElem.addEventListener('input', updateValues)
-numnegElem.addEventListener('input', updateValues)
-sensElem.addEventListener('input', updateValues)
-specElem.addEventListener('input', updateValues)
+
+runSamplingElem.addEventListener("click", updateValues)
 downloadElem.addEventListener('click', downloadChart)

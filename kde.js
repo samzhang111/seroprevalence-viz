@@ -24,11 +24,11 @@ let width, height
 
 const margin = ({top: 20, right: 30, bottom: 50, left: 40})
 
-const leadingZeros = (x) => {
+const leadingZerosBinary = (x) => {
   let i = 0
   while (x < 1) {
     i += 1
-    x *= 10
+    x *= 2
   }
 
   return i
@@ -42,7 +42,7 @@ export const makeChartProps = (data, xlabel, settings) => {
   const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
   const ciRange = posteriorCi[1] - posteriorCi[0]
 
-  let order = ciRange == 0 ? 1 : 10**(1-leadingZeros(ciRange))
+  let order = ciRange == 0 ? 1 : 2**(0.9-leadingZerosBinary(ciRange))
 
   if (order == 1) {
     order = ciRange + 0.1
@@ -274,7 +274,7 @@ const updateFooter = (footerContainer, chartProps) => {
     .attr("text-anchor", "end")
     .attr("font-size", "7")
     .attr("style", "white-space: pre")
-    .text(`${Number(chartProps.data.length).toLocaleString()} posterior draws, with mean and 90% credible interval.        Generated at https://larremorelab.github.io/covid-serology`)
+    .text(`${Number(chartProps.data.length).toLocaleString()} posterior draws, with mean and 90% credible interval.        Generated at https://larremorelab.github.io/covid19testgroup`)
 
 }
 
