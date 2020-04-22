@@ -1,6 +1,5 @@
 import * as d3 from "d3"
-import * as _ from "lodash"
-import {samplePosteriorLog} from "./posteriors"
+import {samplePosteriorLog} from "./sampleCalc1"
 import {makeChart, makeChartProps, updateChart} from "./kde"
 import {saveAs} from "file-saver"
 
@@ -28,7 +27,6 @@ const makeDisplayParams = () => {
 Sensitivity: ${1 - v}
 Specificity: ${1 - u}`
 }
-
 
 const updateProgressBar = async (progress) => {
   if (progressElemReady) {

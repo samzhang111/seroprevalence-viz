@@ -1,15 +1,26 @@
 import * as d3 from "d3"
+import * as _ from "lodash"
 import {jStat} from "jstat"
+import max from '@stdlib/math/base/special/max'
+import min from '@stdlib/math/base/special/min'
+import round from '@stdlib/math/base/special/round'
+import iterstdev from '@stdlib/stats/iter/stdev'
+import array2iterator from '@stdlib/array/to-iterator'
+import itermean from '@stdlib/stats/iter/mean';
+import normalPdf from '@stdlib/stats/base/dists/normal/pdf';
+
+const stdev = data => iterstdev(array2iterator(data))
+const computeMean = data => itermean(array2iterator(data))
 
 function silvermanish(data) {
   // Silverman's method for estimating the bandwidth, except enlarged by a factor of 4/3 to be smoother.
   // Hence, "Silverman-ish"...
 
-  let stdev = jStat.stdev(data)
+  let sd = stdev(data)
   let quartiles = jStat.quartiles(data)
   let iqr = quartiles[2] - quartiles[0]
 
-  return 1.2*Math.min(stdev, iqr/1.34) * data.length**(-0.2)
+  return 1.2*min(sd, iqr/1.34) * data.length**(-0.2)
 }
 
 function kde(kernel, thresholds, data) {
@@ -17,7 +28,7 @@ function kde(kernel, thresholds, data) {
 }
 
 function gaussian(bandwidth) {
-  return x => jStat.normal.pdf(x/bandwidth, 0, 1)
+  return x => normalPdf(x/bandwidth, 0, 1)
 }
 
 let width, height
@@ -38,7 +49,7 @@ export const makeChartProps = (data, xlabel, settings) => {
   width = settings.width || width || 500
   height = settings.height || height || 270
 
-  const mean = jStat.mean(data)
+  const mean = computeMean(data)
   const posteriorCi = jStat.quantiles(data, [0.05, 0.95])
   const ciRange = posteriorCi[1] - posteriorCi[0]
 
@@ -48,8 +59,8 @@ export const makeChartProps = (data, xlabel, settings) => {
     order = ciRange + 0.1
   }
 
-  const lowerDomain = Math.max(0, mean - order)
-  const upperDomain = Math.min(1.15, mean + order)
+  const lowerDomain = max(0, mean - order)
+  const upperDomain = min(1.15, mean + order)
 
   let xrange = [lowerDomain, upperDomain]
 
@@ -171,7 +182,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("font-size", "10px")
     .attr("x", x(mean) + 5)
     .attr("y", y(maxBarHeight) - 5)
-    .text(`${(Math.round(mean*10000)/10000).toFixed(4)}`)
+    .text(`${(round(mean*10000)/10000).toFixed(4)}`)
 
   lowerCiLine
     .attr("x1", x(posteriorCi[0]))
@@ -189,7 +200,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("font-size", "10px")
     .attr("x", x(posteriorCi[0]) - 4)
     .attr("y", y(maxBarHeight) - 5)
-    .text(`${(Math.round(posteriorCi[0]*10000)/10000).toFixed(4)}`)
+    .text(`${(round(posteriorCi[0]*10000)/10000).toFixed(4)}`)
 
   upperCiLine
     .attr("x1", x(posteriorCi[1]))
@@ -207,7 +218,7 @@ const updateMeanLine = (lineContainer, chartProps, skipTransition=false) => {
     .attr("font-size", "10px")
     .attr("x", x(posteriorCi[1]) + 5)
     .attr("y", y(maxBarHeight) + upperCiOffset)
-    .text(`${(Math.round(posteriorCi[1]*10000)/10000).toFixed(4)}`)
+    .text(`${(round(posteriorCi[1]*10000)/10000).toFixed(4)}`)
 
   return lineContainer
 }

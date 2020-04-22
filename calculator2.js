@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import * as _ from "lodash"
-import {samplePosteriorMcmc} from "./posteriors"
+import {samplePosteriorMcmc} from "./sampleCalc2"
 import {makeChart, makeChartProps, updateChart} from "./kde"
 import {saveAs} from "file-saver"
 
