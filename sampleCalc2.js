@@ -68,8 +68,12 @@ export const samplePosteriorMcmc = async (samps, pos, n, tp, tn, fp, fn, progres
 let logCache = []
 
 const logBinom = (k, n, p) => {
+  if (p == 0 || p == 1) {
+    return 0 + (k == p)
+  }
+
   let runningLog = 0
-  let lognfac, logkfac, lognminuskfac
+  let lognfac, logkfac, lognminuskfac = 0
   for (let i = 1; i <= n; i++) {
     if (logCache.length < i) {
       logCache.push(ln(i))
