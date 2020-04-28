@@ -1,14 +1,10 @@
-#app {
-    margin: 5em 3em 5em;
-    max-width: 70em;
-}
-
 #desc {
     margin-bottom: 3em;
 }
 
 #inputs1 {
     margin-bottom: 1em;
+    width: auto;
 }
 
 #inputs1 input {
@@ -16,13 +12,18 @@
 }
 
 .label {
-    padding-bottom: 1.2em !important;
+    padding-bottom: 2.5em !important;
 }
 
 #vizcontainer {
     padding: 3em;
+    max-width: 70em;
 }
 
 #downloadsvg {
     margin: 1em 4.5em 0;
+}
+
+#runsampling {
+    margin: 1em 0;
 }

@@ -1,0 +1,15 @@
+html {
+    font-size: 14px;
+}
+
+.card .card-image img {
+   height: auto;
+}
+
+h1, h2, h3, h4 {
+    color: #ee6e73;;
+}
+
+footer a {
+    color: #90caf9;
+}

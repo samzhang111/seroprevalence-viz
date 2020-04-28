@@ -7,59 +7,82 @@
 		<title>Prevalence calculator (known sensitivity and specificity)</title>
 	</head>
 	<body>
-		<div id="app">
-			<h3>Prevalence calculator (known sensitivity and specificity)</h3>
-			<div id="desc">
-			<span style="background-color: #fad6d8"><strong>This calculator is one of multiple resources available through the <a href="https://larremorelab.github.io/covid19testgroup">COVID-19 Testing Group</a>.</strong></span> It accompanies the manuscript "Estimating SARS-CoV-2 seroprevalence and epidemiological parameters with uncertainty from serological surveys", which is available as a <a href="https://www.medrxiv.org/content/10.1101/2020.04.15.20067066v1">preprint</a>. This work is not yet peer reviewed.
+		<div class="container">
 
-			<h5>Given test results in a population sample, using a test with <b>known sensitivity and specificity</b>, what is the posterior distribution of prevalence in the population?</h5>
+			<div class="section">
+				<div class="center-align">
+					<a href="/covid19testgroup">
+						<img src="../assets/images/covid/header.png">
+					</a>
+				</div>
+				<h1 class="center-align"
+					style="margin-top:-5px;">COVID-19 Testing Group</h1>
+
+				<div>The COVID-19 Testing Group is a community resource for <strong>sharing the latest information on COVID-19 prevalence, seroprevalence, and burden studies, planning tools, and data.</strong> This website is maintained jointly by the <a href="https://larremorelab.github.io">Larremore Lab</a> at the University of Colorado, Boulder and the <a href="https://sites.sph.harvard.edu/grad-lab/">Grad Lab</a> at the Harvard T.H. Chan School of Public Health. 
+				</div>
+			</div>
+			<div id="app">
+				<h3>Prevalence calculator (known sensitivity and specificity)</h3>
+				<div id="desc">
+					This calculator is one of multiple resources available through the <a href="https://larremorelab.github.io/covid19testgroup">COVID-19 Testing Group</a>. It accompanies the manuscript "Estimating SARS-CoV-2 seroprevalence and epidemiological parameters with uncertainty from serological surveys", which is available as a <a href="https://www.medrxiv.org/content/10.1101/2020.04.15.20067066v1">preprint</a>. This work is not yet peer reviewed.
+
+					<h5>Given test results in a population sample, using a test with <b>known sensitivity and specificity</b>, what is the posterior distribution of prevalence in the population?</h5>
+				</div>
+
+				<div>
+					<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="inputs1">
+						<tr class="row">
+							<th class="mdl-data-table__cell--non-numeric label"># positive tests</th>
+							<td>
+								<input class="validate" id="numpos" type="number" step="1" min="0" value="16">
+								<div class="helper-text" data-error="Must be >=0"></div>
+							</td>
+						</tr>
+
+						<tr class="row">
+							<th class="mdl-data-table__cell--non-numeric label"># negative tests</th>
+							<td>
+								<input class="validate" id="numneg" type="number" step="1" min="0" value="84">
+								<div class="helper-text" data-error="Must be >=0"></div>
+							</td>
+						</tr>
+
+						<tr class="row">
+							<th class="mdl-data-table__cell--non-numeric label">Sensitivity</th>
+							<td>
+								<input class="validate" id="sensitivity" type="number" step="0.001" min="0.1" max="1" value="0.93">
+								<div class="helper-text" data-error="Must be between 0.1 and 1"></div>
+							</td>
+						</tr>
+
+						<tr class="row">
+							<th class="mdl-data-table__cell--non-numeric label">Specificity</th>
+							<td>
+								<input class="validate" id="specificity" type="number" step="0.001" min="0.1" max="1" value="0.975">
+								<div class="helper-text" data-error="Must be between 0.1 and 1"></div>
+							</td>
+						</tr>
+					</table>
+
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="runsampling">Update Graph</button>
+					<div id="samplingProgress" class="mdl-progress mdl-js-progress"></div>
+				</div>
+
+				<div id="vizcontainer" class="mdl-shadow--4dp">
+					<div id="posteriorviz"></div>
+					<button class="mdl-button mdl-js-button mdl-button--raised" id="downloadsvg">Download image</button>
+				</div>
+
+				<p>This is in beta. Please report bugs with screenshots to daniel.larremore@colorado.edu. The source code for this visualization is on <a href="https://github.com/samzhang111/seroprevalence-viz">Github</a>.</p>
 			</div>
 
-			<div>
-				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="inputs1">
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label"># positive tests</th>
-						<td>
-							<input id="numpos" type="number" step="1" min="0" value="16">
-						</td>
-					</tr>
-
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label"># negative tests</th>
-						<td>
-							<input id="numneg" type="number" step="1" min="0" value="84">
-						</td>
-					</tr>
-
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Sensitivity</th>
-						<td>
-							<input id="sensitivity" type="number" step="0.001" min="0.6" max="1" value="0.93">
-						</td>
-					</tr>
-
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Specificity</th>
-						<td>
-							<input id="specificity" type="number" step="0.001" min="0.6" max="1" value="0.975">
-						</td>
-					</tr>
-				</table>
-
-				<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="runsampling">Update Graph</button>
-				<div id="samplingProgress" class="mdl-progress mdl-js-progress"></div>
-			</div>
-
-			<div id="vizcontainer" class="mdl-shadow--4dp">
-				<div id="posteriorviz"></div>
-				<button class="mdl-button mdl-js-button mdl-button--raised" id="downloadsvg">Download image</button>
-			</div>
-
-			<h5>This is in beta. Please report bugs with screenshots to daniel.larremore@colorado.edu. The source code for this visualization is on <a href="https://github.com/samzhang111/seroprevalence-viz">Github</a>.</h5>
 		</div>
 
-
-		<link rel="stylesheet" type="text/css" href="/assets/css/covid/serology.css">
+		<link rel="stylesheet" type="text/css" href="../assets/css/covid/serology.css">
 		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-deep_purple.min.css">
 		<script defer="defer" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<link rel="stylesheet" href="../assets/css/covid/covid19testgroup.css">
+	</body>
 </html>

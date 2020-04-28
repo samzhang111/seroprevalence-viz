@@ -86,7 +86,7 @@ const updateValues = async () => {
 
   if (
     isNaN(nplus) || isNaN(nminus) || isNaN(tp) || isNaN(tn)
-    || isNaN(fp) || isNaN(fn)
+    || isNaN(fp) || isNaN(fn) || numsamps < 1000
   ) {
     return
   }
