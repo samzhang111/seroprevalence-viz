@@ -75,7 +75,7 @@ let logCache = []
 const logBinom = (k, n, p) => {
   // 0 choose 0 is 1
   if (k == 0 && n == 0) {
-    return 1
+    return 0
   }
 
   if (p == 0 || p == 1) {
