@@ -21,7 +21,12 @@ export const samplePosteriorMcmc = async (samps, pos, n, tp, tn, fp, fn, progres
 
   // mcmc tuning parameters; larger values decrease variability in proposals
   // burn_in must be multiple of thin
-  const sp_adj = pos/n < 1-sp ? n+tn+fp : tn+fp
+  let sp_adj = tn + fp
+
+  if (n > 0) {
+    sp_adj = pos/n < 1-sp ? n+tn+fp : tn+fp
+  }
+
   const delta_r = 100*(1 + floor(n/3000))
   const delta_sp = 100*(1 + floor((sp_adj)/3000))
   const delta_se = 100*(1 + floor((tp+fn)/3000))
@@ -68,6 +73,11 @@ export const samplePosteriorMcmc = async (samps, pos, n, tp, tn, fp, fn, progres
 let logCache = []
 
 const logBinom = (k, n, p) => {
+  // 0 choose 0 is 1
+  if (k == 0 && n == 0) {
+    return 1
+  }
+
   if (p == 0 || p == 1) {
     return 0 + (k == p)
   }
