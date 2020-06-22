@@ -18,6 +18,7 @@
     "lodash": "^4.17.15",
     "mathjs": "^6.6.3",
     "numjs": "^0.16.0",
+    "vega": "^5.13.0",
     "webpack": "^4.42.1"
   },
   "devDependencies": {
