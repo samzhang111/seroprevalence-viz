@@ -3,6 +3,18 @@ import discreteUniform from '@stdlib/random/base/discrete-uniform'
 import gamma from '@stdlib/random/base/gamma'
 
 
+export const flatTriangleArea = (traj, t1, left, right) => {
+  let area = 0
+
+  for (let i = Math.ceil(left); i <= right; i++) {
+    let inf = infectiousnessAtTime2(traj, t1, i)
+    area += inf
+  }
+
+  return area
+}
+
+
 export const simulateTrajectories = async (settings) => {
   const { incubationmin, incubationmax, onsetfixed, onsetgamma, peakloadmin, peakloadmax, decaymin, decaymax, numSamples } = settings
 
@@ -12,6 +24,10 @@ export const simulateTrajectories = async (settings) => {
     let t0 = uniform(incubationmin, incubationmax)
     let vpeak = uniform(peakloadmin, peakloadmax)
     let tpeak = t0 + onsetfixed + gamma(onsetgamma, 1)
+    /*    while (tpeak > 4) {
+      tpeak = t0 + onsetfixed + gamma(onsetgamma, 1)
+    }*/
+
     let tf = tpeak + uniform(decaymin, decaymax)
 
     trajectories.push({t0, tpeak, tf, vpeak})
@@ -20,7 +36,7 @@ export const simulateTrajectories = async (settings) => {
   return trajectories
 }
 
-const infectiousnessAtTime = (trajectory, time) => {
+export const infectiousnessAtTime = (trajectory, time) => {
   let y
 
   if (time < trajectory.tpeak) {
@@ -33,14 +49,31 @@ const infectiousnessAtTime = (trajectory, time) => {
   return y
 }
 
-const firstDetectableTime = (traj) => {
+export const infectiousnessAtTime2 = (trajectory, t1, time) => {
+  if (t1 == trajectory.tpeak || trajectory.tf == trajectory.tpeak) {
+    return trajectory.vpeak
+  }
+
+  let y
+
+  if (time < trajectory.tpeak) {
+    y = (time - t1)*(trajectory.vpeak - 6)/(trajectory.tpeak - t1)
+  }
+  else {
+    y = (time - trajectory.tf)*(trajectory.vpeak - 6)/(trajectory.tpeak - trajectory.tf)
+  }
+
+  return Math.max(y, 0)
+}
+
+export const firstDetectableTime = (traj) => {
   return 3*(traj.tpeak - traj.t0)/(traj.vpeak - 3) + traj.t0
 }
 
 const infectiousnessPercentage = (traj, t) => {
-  let t1 = firstDetectableTime(traj)
+  let t1 = Math.ceil(firstDetectableTime(traj))
 
-  const area = 0.5 * (traj.tf - t1)*(traj.vpeak - 6)
+  const area = flatTriangleArea(traj, t1, t1, traj.tf)
 
   // test result came back after infectiousness period
   if (t >= traj.tf) {
@@ -58,10 +91,8 @@ const infectiousnessPercentage = (traj, t) => {
     }
   }
 
-  let infT = infectiousnessAtTime(traj, t)
-
   if (t < traj.tpeak) {
-    let a = 0.5 * (t - t1) * (infT - 6)
+    let a = flatTriangleArea(traj, t1, t1, t)
 
     return {
       area,
@@ -69,7 +100,7 @@ const infectiousnessPercentage = (traj, t) => {
     }
   }
   
-  let b = 0.5 * (traj.tf - t) * (infT - 6)
+  let b = flatTriangleArea(traj, t1, t, traj.tf)
 
   return {
     area,

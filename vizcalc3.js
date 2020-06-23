@@ -215,7 +215,7 @@ export const makeInfectiousnessRemovedBarplotSpec = (infectiousnesses, baselineI
         "name": "color",
         "type": "ordinal",
         "domain": {"data": "table", "field": "c"},
-        "range": ["rgb(255,51,119)", "rgb(223,223,223)"]
+        "range": ["rgb(255,51,119)", "rgb(100,100,100)"]
       }
     ],
 

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Surveillance testing with different policies</title>
+	</head>
+	<body>
+		
+<div class="container">
+            
+            <div class="section">
+                <div class="center-align">
+                    <a href="/covid19testgroup">
+                    <img src="../assets/images/covid/header.png">
+                    </a>
+                </div>
+                <h1 class="center-align" style="margin-top:-5px;">COVID-19 Testing Group</h1>
+
+                <div>The COVID-19 Testing Group is a community resource for <strong>sharing the latest information on COVID-19 prevalence, seroprevalence, and burden studies, planning tools, and data.</strong> This website is maintained jointly by the <a href="https://larremorelab.github.io">Larremore Lab</a> at the University of Colorado, Boulder and the <a href="https://sites.sph.harvard.edu/grad-lab/">Grad Lab</a> at the Harvard T.H. Chan School of Public Health. 
+                </div>
+            </div>
+
+<div id="app">
+
+			<h3>Surveillance testing with different policies</h3>
+			<div id="desc">
+
+			<strong>This calculator is one of multiple resources available through the <a href="https://larremorelab.github.io/covid19testgroup">COVID-19 Testing Group</a>.</strong> It accompanies the manuscript "Surveillance testing of SARS-CoV-2". This work is not yet peer reviewed.
+
+
+			<h5>How do specificity of tests, frequency of testing, and sample-to-answer reporting time change the effectiveness of surveillance policies?</h5>
+			</div>
+
+			<div id="inputs">
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+					<th>Surveillance policy</th>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Viral load sensitivity (log10 cp/ml)</th>
+						<td>
+							<input class="validate" id="vsens" type="number" step="1" min="1" value="3">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Days between tests</th>
+						<td>
+							<input class="validate" id="testfreq" type="number" step="1" min="1" value="7">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Sample-to-answer delay (days)</th>
+						<td>
+							<input class="validate" id="delay" type="number" step="1" min="0" value="1">
+							<div class="helper-text" data-error="Must be >=0"></div>
+						</td>
+					</tr>
+				</table>
+
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+					<th>Viral kinetics</th>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Incubation time until 1e3 (min, max)</th>
+						<td>
+							<input class="validate" id="incubationmin" type="number" step="0.5" min="1" value="2.5">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+						<td>
+							<input class="validate" id="incubationmax" type="number" step="0.5" min="1" value="3.5">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+					</tr>
+
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Time between 1e3 and peak (fixed, gamma shape)</th>
+						<td>
+							<input class="validate" id="onsetfixed" type="number" step="0.1" min="0" value="0.2">
+							<div class="helper-text" data-error="Must be >=0"></div>
+						</td>
+						<td>
+							<input class="validate" id="onsetgamma" type="number" step="0.1" min="1" value="1.8">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+					</tr>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Peak viral load, log10 (min, max)</th>
+						<td>
+							<input class="validate" id="peakloadmin" type="number" step="0.1" min="1" value="7">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+						<td>
+							<input class="validate" id="peakloadmax" type="number" step="0.1" min="1" value="11">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+					</tr>
+					<tr class="row">
+						<th class="mdl-data-table__cell--non-numeric label">Time between peak and 1e6 (min, max)</th>
+						<td>
+							<input class="validate" id="decaymin" type="number" step="0.1" min="1" value="5">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+						<td>
+							<input class="validate" id="decaymax" type="number" step="0.1" min="1" value="10">
+							<div class="helper-text" data-error="Must be >=1"></div>
+						</td>
+					</tr>
+				</table>
+
+				<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="runsampling">Update Graph</button>
+			</div>
+
+			<div id="vizcontainer" class="mdl-shadow--4dp">
+				<div id="trajectories"></div>
+				<div>
+					<div id="infectiousness-removed"></div>
+					<div id="individual-infectiousnesses"></div>
+				</div>
+			</div>
+
+			<p>Please report bugs with screenshots to daniel.larremore@colorado.edu. The source code for this visualization is on <a href="https://github.com/samzhang111/seroprevalence-viz">Github</a>.</p>
+		</div>
+
+		<link rel="stylesheet" type="text/css" href="../assets/css/covid/calc3.css">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-deep_purple.min.css">
+		<script defer="defer" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <link rel="stylesheet" href="../assets/css/covid/covid19testgroup.css">
+<script src="calc3.d8d730079f303c2e10bc.js"></script></div></body></html>
