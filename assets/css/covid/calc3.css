@@ -7,15 +7,23 @@
 }
 
 #inputs table {
-    width: auto;
+    display: inline-block;
+}
+
+#inputs th {
+    padding-right: 1em;
+}
+
+#inputs td {
+    padding-left: 0;
+}
+
+#inputs input {
+    min-width: 2.5em;
 }
 
 .inputtable {
     margin-bottom: 1em;
-}
-
-.inputtable input {
-    width: 10em;
 }
 
 .label {

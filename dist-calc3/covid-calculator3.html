@@ -34,7 +34,8 @@
 			</div>
 
 			<div id="inputs">
-				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+				<div class="mdl-grid">
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--5-col mdl-cell--8-col-tablet inputtable">
 					<th>Surveillance policy</th>
 					<tr class="row">
 						<th class="mdl-data-table__cell--non-numeric label">Viral load sensitivity (log10 cp/ml)</th>
@@ -61,10 +62,10 @@
 					</tr>
 				</table>
 
-				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--7-col mdl-cell--8-col-tablet inputtable">
 					<th>Viral kinetics</th>
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Incubation time until 1e3 (min, max)</th>
+						<th class="mdl-data-table__cell--non-numeric label">Incubation time (min, max)</th>
 						<td>
 							<input class="validate" id="incubationmin" type="number" step="0.5" min="1" value="2.5">
 							<div class="helper-text" data-error="Must be >=1"></div>
@@ -76,7 +77,7 @@
 					</tr>
 
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Time between 1e3 and peak (fixed, gamma shape)</th>
+						<th class="mdl-data-table__cell--non-numeric label">Then time before peak (fixed, gamma shape)</th>
 						<td>
 							<input class="validate" id="onsetfixed" type="number" step="0.1" min="0" value="0.2">
 							<div class="helper-text" data-error="Must be >=0"></div>
@@ -109,6 +110,7 @@
 						</td>
 					</tr>
 				</table>
+			</div>
 
 				<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="runsampling">Update Graph</button>
 			</div>
