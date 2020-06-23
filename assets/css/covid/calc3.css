@@ -1,0 +1,36 @@
+#desc {
+    margin-bottom: 3em;
+}
+
+#inputs {
+    margin-bottom: 2em;
+}
+
+#inputs table {
+    width: auto;
+}
+
+.inputtable {
+    margin-bottom: 1em;
+}
+
+.inputtable input {
+    width: 10em;
+}
+
+.label {
+    padding-bottom: 2.5em !important;
+}
+
+#vizcontainer {
+    padding: 3em;
+    max-width: 70em;
+}
+
+#downloadsvg {
+    margin: 1em 4.5em 0;
+}
+
+#runsampling {
+    margin: 1em 0;
+}

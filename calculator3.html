@@ -65,14 +65,11 @@
 				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp inputtable">
 					<th>Viral kinetics</th>
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Incubation time until 1e3 (min)</th>
+						<th class="mdl-data-table__cell--non-numeric label">Incubation time until 1e3 (min, max)</th>
 						<td>
 							<input class="validate" id="incubationmin" type="number" step="0.5" min="1" value="2.5">
 							<div class="helper-text" data-error="Must be >=1"></div>
 						</td>
-					</tr>
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Incubation time until 1e3 (max)</th>
 						<td>
 							<input class="validate" id="incubationmax" type="number" step="0.5" min="1" value="3.5">
 							<div class="helper-text" data-error="Must be >=1"></div>
@@ -80,42 +77,33 @@
 					</tr>
 
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Time between 1e3 and peak (fixed)</th>
+						<th class="mdl-data-table__cell--non-numeric label">Time between 1e3 and peak (fixed, gamma shape)</th>
 						<td>
 							<input class="validate" id="onsetfixed" type="number" step="0.1" min="0" value="0.2">
 							<div class="helper-text" data-error="Must be >=0"></div>
 						</td>
-					</tr>
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Time between 1e3 and peak (gamma shape)</th>
 						<td>
 							<input class="validate" id="onsetgamma" type="number" step="0.1" min="1" value="1.8">
 							<div class="helper-text" data-error="Must be >=1"></div>
 						</td>
 					</tr>
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Peak viral load, log10 (min)</th>
+						<th class="mdl-data-table__cell--non-numeric label">Peak viral load, log10 (min, max)</th>
 						<td>
 							<input class="validate" id="peakloadmin" type="number" step="0.1" min="1" value="7">
 							<div class="helper-text" data-error="Must be >=1"></div>
 						</td>
-					</tr>
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Peak viral load, log10 (max)</th>
 						<td>
 							<input class="validate" id="peakloadmax" type="number" step="0.1" min="1" value="11">
 							<div class="helper-text" data-error="Must be >=1"></div>
 						</td>
 					</tr>
 					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Time between peak and 1e6 (min)</th>
+						<th class="mdl-data-table__cell--non-numeric label">Time between peak and 1e6 (min, max)</th>
 						<td>
 							<input class="validate" id="decaymin" type="number" step="0.1" min="1" value="5">
 							<div class="helper-text" data-error="Must be >=1"></div>
 						</td>
-					</tr>
-					<tr class="row">
-						<th class="mdl-data-table__cell--non-numeric label">Time between peak and 1e6 (max)</th>
 						<td>
 							<input class="validate" id="decaymax" type="number" step="0.1" min="1" value="10">
 							<div class="helper-text" data-error="Must be >=1"></div>
@@ -124,7 +112,6 @@
 				</table>
 
 				<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="runsampling">Update Graph</button>
-				<div id="samplingProgress" class="mdl-progress mdl-js-progress"></div>
 			</div>
 
 			<div id="vizcontainer" class="mdl-shadow--4dp">
@@ -133,14 +120,12 @@
 					<div id="infectiousness-removed"></div>
 					<div id="individual-infectiousnesses"></div>
 				</div>
-				<button class="mdl-button mdl-js-button mdl-button--raised" id="downloadsvg">Download image</button>
 			</div>
 
 			<p>Please report bugs with screenshots to daniel.larremore@colorado.edu. The source code for this visualization is on <a href="https://github.com/samzhang111/seroprevalence-viz">Github</a>.</p>
 		</div>
 
-
-		<link rel="stylesheet" type="text/css" href="../assets/css/covid/calc2.css">
+		<link rel="stylesheet" type="text/css" href="../assets/css/covid/calc3.css">
 		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-deep_purple.min.css">
 		<script defer="defer" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">

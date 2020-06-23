@@ -335,7 +335,7 @@ export const makeIndividualInfectiousnessScatterSpec = (infectiousnesses, baseli
         "round": true,
         "nice": true,
         "zero": true,
-        "domain": {"data": "source", "field": "infectiousness"},
+        "domain": [0, 100],
         "range": "height",
       },
       {
