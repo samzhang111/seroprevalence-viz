@@ -34,3 +34,8 @@
 #runsampling {
     margin: 1em 0;
 }
+
+.inline-graph {
+    display: inline-block;
+    margin-right: 1em;
+}

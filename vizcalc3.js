@@ -1,8 +1,12 @@
+import {infectiousnessAtTime, infectiousnessAtTime2} from "./infectiousness"
+
 export const makeTrajectoriesSpec = trajectories => {
 
   let firstPieces = []
   let secondPieces = []
   let data = []
+  let ctrlPoints = []
+  let integerPoints = []
 
   // trajectories.push({t0, tpeak, tf, vpeak})
 
@@ -11,9 +15,19 @@ export const makeTrajectoriesSpec = trajectories => {
 
     data.push({x: traj.t0, y: 3, i})
     data.push({x: traj.tpeak, y: traj.vpeak, i})
-    //data.push({x: traj.tf, y: 6, i})
+    ctrlPoints.push({x: traj.t0, y: 3, i})
+    ctrlPoints.push({x: traj.tpeak, y: traj.vpeak, i})
+    ctrlPoints.push({x: traj.tf, y: 6, i})
 
     let xcand = traj.tf - 3*(traj.tf - traj.tpeak)/(6 - traj.vpeak)
+
+    for (let j = traj.t0; j < Math.min(xcand, 30); j++) {
+      let inf = infectiousnessAtTime(traj, j)
+      if (inf >= 3) {
+        integerPoints.push({x: j, y: inf, i})
+      }
+    }
+
 
     if (xcand <= 30) {
       data.push({x: xcand, y: 3, i})
@@ -31,11 +45,39 @@ export const makeTrajectoriesSpec = trajectories => {
     "width": 500,
     "height": 200,
     "padding": 5,
+    "signals": [
+      {
+        "name": "hoveringOver", "value": null,
+        "on": [
+          {
+            "events": "line:mouseover",
+            "update": "{i: datum.i}",
+            "force":  true
+          }
+        ]
+      },
+      { "name": "hoveringOut", "value": null, "on": [{"events": "line:mouseout", "force": true, "update": "{}"}] }
+    ],
 
     "data": [
       {
         "name": "trajectories",
         "values": data,
+      },
+      {
+        "name": "ctrlPoints",
+        "values": ctrlPoints,
+      },
+      {
+        "name": "integerPoints",
+        "values": integerPoints,
+      },
+      {
+        "name": "hovered",
+        "on": [
+          {"trigger": "hoveringOver", "insert": "hoveringOver"},
+          {"trigger": "hoveringOut", "remove": "hoveringOver"}
+        ]
       }
     ],
 
@@ -56,31 +98,12 @@ export const makeTrajectoriesSpec = trajectories => {
         "zero": false,
         "domain": {"data": "trajectories", "field": "y"}
       },
-      /*{
-        "name": "color",
-        "type": "ordinal",
-        "range": "category",
-        "domain": {"data": "trajectories", "field": "i"}
-      }*/
     ],
 
     "axes": [
       {"orient": "bottom", "scale": "x", title: "days since exposure, t", labelFontSize: 16, titleFontSize: 16},
       {"orient": "left", "scale": "y", title: "log10 viral load (virions/mL)", labelFontSize: 16, titleFontSize: 16, grid: true}
     ],
-
-    /*
-    "signals": [
-      {
-        "name": "hover",
-        "value": null,
-        "on": [
-          {"events": "line:mouseover", "update": "datum"},
-          {"events": "line:mouseout", "update": "null"},
-        ]
-      }
-    ],
-    */
 
     "marks": [
       {
@@ -111,23 +134,83 @@ export const makeTrajectoriesSpec = trajectories => {
                 "strokeOpacity": {"value": 1}
               }
             }
-          },
-          /*
+          }
+        ],
+      },
+      {
+        "type": "group",
+        "from": {
+          "facet": {
+            "name": "ctrls",
+            "data": "ctrlPoints",
+            "groupby": "i"
+          }
+        },
+        "marks": [
           {
             "type": "symbol",
-            "shape": "square",
+            "from": {"data": "ctrls"},
             "interactive": false,
-            "from": {"data": "series"},
             "encode": {
               "enter": {
+                "zindex": {"value": 100},
+                "shape": {"value": "square"},
+                "fill": {"value": "rgb(144, 211, 0)"},
                 "x": {"scale": "x", "field": "x"},
                 "y": {"scale": "y", "field": "y"},
-                //"stroke": {"scale": "color", "field": "i"},
-                "opacity": {"value": 0.1}
+                "fillOpacity": {"value": 1},
+                "strokeWidth": {"value": 1},
+                "opacity": {"value": 0},
+                "stroke": {"value": "rgb(0, 0, 0)"},
               },
+              "update": {
+                "opacity": [
+                  {
+                    "test": "indata('hovered', 'i', datum.i)",
+                    "value": 1
+                  },
+                  {"value": 0}
+                ],
+              }
             }
           },
-          */
+
+        ]
+      },
+      {
+        "type": "group",
+        "from": {
+          "facet": {
+            "name": "integers",
+            "data": "integerPoints",
+            "groupby": "i"
+          }
+        },
+        "marks": [
+          {
+            "type": "symbol",
+            "from": {"data": "integers"},
+            "interactive": false,
+            "encode": {
+              "enter": {
+                "shape": {"value": "circle"},
+                "size": {"value": 16},
+                "fill": {"value": "rgb(0, 0, 0)"},
+                "x": {"scale": "x", "field": "x"},
+                "y": {"scale": "y", "field": "y"},
+                "fillOpacity": {"value": 0},
+                "strokeWidth": {"value": 0},
+              },
+              "update": {
+                "fillOpacity": [{
+                  "test": "indata('hovered', 'i', datum.i)",
+                  "value": 1
+                },
+                {"value": 0}
+                ],
+              }
+            }
+          },
 
         ]
       }

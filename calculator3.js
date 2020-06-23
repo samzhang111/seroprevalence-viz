@@ -65,6 +65,9 @@ const updateValues = async () => {
     hover: true
   })
 
+  window.view = trajectoriesView
+  window.view.logLevel(vega.Info);
+
   trajectoriesView.runAsync()
 
   const infectiousnesses = computeInfectiousness(trajectories, {vsens, testfreq, delay})
