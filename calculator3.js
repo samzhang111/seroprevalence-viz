@@ -2,7 +2,7 @@ import * as d3 from "d3"
 import * as _ from "lodash"
 //import {samplePosteriorMcmc} from "./sampleCalc2"
 //import {makeChart, makeChartProps, updateChart} from "./kde"
-import { simulateTrajectories, computeInfectiousness  } from "./sampleCalc3"
+import { simulateTrajectories, computeInfectiousness, makeInfectiousnessData  } from "./sampleCalc3"
 import { makeTrajectoriesSpec, makeInfectiousnessRemovedBarplotSpec, makeIndividualInfectiousnessScatterSpec } from "./vizcalc3"
 import {saveAs} from "file-saver"
 import * as vega from "vega"
@@ -21,6 +21,8 @@ const peakloadmaxElem = document.getElementById("peakloadmax")
 const decayminElem = document.getElementById("decaymin")
 const decaymaxElem = document.getElementById("decaymax")
 const runSamplingElem = document.getElementById("runsampling")
+const summaryElem = document.getElementById("summary")
+const fvalElem = document.getElementById("fval")
 
 let vsens = parseFloat(vsensElem.value)
 let testfreq = parseInt(testfreqElem.value)
@@ -77,7 +79,8 @@ const updateValues = async () => {
     delay: 1000
   })
 
-  const infectiousnessRemovedBarplotSpec = makeInfectiousnessRemovedBarplotSpec(infectiousnesses, infectiousnessesBaseline)
+  const infectiousnessData = makeInfectiousnessData(infectiousnesses, infectiousnessesBaseline)
+  const infectiousnessRemovedBarplotSpec = makeInfectiousnessRemovedBarplotSpec(infectiousnessData)
 
   barplotView = new vega.View(vega.parse(infectiousnessRemovedBarplotSpec), {
     renderer: 'svg',
@@ -96,6 +99,9 @@ const updateValues = async () => {
   })
 
   scatterplotView.runAsync()
+
+  fvalElem.textContent = Math.round(1000 * (100 - (infectiousnessData[2]['y'] + infectiousnessData[3]['y']))/(100 - (infectiousnessData[0]['y'] + infectiousnessData[1]['y'])))/1000
+  summaryElem.style.display = "block"
 }
 
 runSamplingElem.addEventListener("click", updateValues)

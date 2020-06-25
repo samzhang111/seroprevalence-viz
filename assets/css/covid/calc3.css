@@ -41,3 +41,9 @@
     display: inline-block;
     margin-right: 1em;
 }
+
+#summary {
+    display: none;
+    margin: 0.5em 0;
+
+}

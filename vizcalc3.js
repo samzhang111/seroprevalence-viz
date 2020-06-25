@@ -218,46 +218,7 @@ export const makeTrajectoriesSpec = trajectories => {
   }
 }
 
-export const makeInfectiousnessRemovedBarplotSpec = (infectiousnesses, baselineInfectiousnesses) => {
-
-  let totalInfectiousness = 0
-  let infecRemovedByTest = 0
-  let infecRemovedBySelf = 0
-
-  let baseTotalInfectiousness = 0
-  let baseInfecRemovedByTest = 0
-  let baseInfecRemovedBySelf = 0
-
-  for (let i = 0; i < infectiousnesses.length; i++) {
-    totalInfectiousness += infectiousnesses[i].totalInfectiousness
-
-    if (infectiousnesses[i].selfIsolation) {
-      infecRemovedBySelf += infectiousnesses[i].infectiousnessRemoved
-    }
-    else {
-      infecRemovedByTest += infectiousnesses[i].infectiousnessRemoved
-    }
-  }
-
-  for (let i = 0; i < baselineInfectiousnesses.length; i++) {
-    baseTotalInfectiousness += baselineInfectiousnesses[i].totalInfectiousness
-
-    if (baselineInfectiousnesses[i].caught) {
-      baseInfecRemovedByTest += baselineInfectiousnesses[i].infectiousnessRemoved
-    }
-    else {
-      baseInfecRemovedBySelf += baselineInfectiousnesses[i].infectiousnessRemoved
-    }
-  }
-
-  let data = 
-    [
-          {x: "No tests", y: 100*baseInfecRemovedByTest/baseTotalInfectiousness, c: "Detected"},
-          {x: "No tests", y: 100*baseInfecRemovedBySelf/baseTotalInfectiousness, c: "Self-isolated"},
-          {x: "Tests", y: 100*infecRemovedByTest/totalInfectiousness, c: "Detected"},
-          {x: "Tests", y: 100*infecRemovedBySelf/totalInfectiousness, c: "Self-isolated"},
-    ]
-
+export const makeInfectiousnessRemovedBarplotSpec = (data) => {
   return {
     "$schema": "https://vega.github.io/schema/vega/v5.json",
     "description": "Stacked bar chart showing infectiousness removed",
