@@ -1,37 +1,31 @@
-#desc {
-    margin-bottom: 3em;
-}
-
-#inputs {
-    margin-bottom: 2em;
-}
-
 #inputs table {
     display: inline-block;
 }
 
-#inputs th {
+#inputs .label {
+    padding-bottom: 1.2em !important;
     padding-right: 1em;
 }
 
 #inputs td {
     padding-left: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 #inputs input {
     min-width: 2.5em;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .inputtable {
     margin-bottom: 1em;
 }
 
-.label {
-    padding-bottom: 2.5em !important;
-}
 
 #vizcontainer {
-    padding: 3em;
+    padding: 0.5em 3em;
     max-width: 70em;
 }
 
@@ -40,7 +34,7 @@
 }
 
 #runsampling {
-    margin: 1em 0;
+    margin: 0 0 1em 0;
 }
 
 .inline-graph {
