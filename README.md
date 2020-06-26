@@ -1,8 +1,12 @@
 # Covid seroprevalence visualization
 
-**Live at [https://larremorelab.github.io/covid-serology](https://larremorelab.github.io/covid-serology).**
+**Live at:**
 
-This interactive calculator accompanies the manuscript "Estimating SARS-CoV-2 seroprevalence and epidemiological parameters with uncertainty from serological surveys", which is available as a [preprint](https://dash.harvard.edu/handle/1/42659939). Other code for the project is available [here](https://github.com/LarremoreLab/covid_serological_sampling).
+* [Calculator 1](https://larremorelab.github.io/covid-calculator1)
+* [Calculator 2](https://larremorelab.github.io/covid-calculator2)
+* [Calculator 3](https://larremorelab.github.io/covid-calculator3)
+
+These interactive calculators accompany several recent manuscripts available at [https://larremorelab.github.io/covid19testgroup](The Covid-19 Test Group).
 
 ## Installation
 
