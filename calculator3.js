@@ -7,7 +7,7 @@ import { makeTrajectoriesSpec, makeInfectiousnessRemovedBarplotSpec, makeIndivid
 import {saveAs} from "file-saver"
 import * as vega from "vega"
 
-const numSamples = 100
+const numSamples = 1000
 
 const vsensElem = document.getElementById("vsens")
 const testfreqElem = document.getElementById("testfreq")
@@ -59,7 +59,7 @@ const updateValues = async () => {
     incubationmin, incubationmax, onsetfixed, onsetgamma, peakloadmin, peakloadmax, decaymin, decaymax, numSamples
   })
 
-  const trajectoriesSpec = makeTrajectoriesSpec(trajectories)
+  const trajectoriesSpec = makeTrajectoriesSpec(trajectories.slice(0, 100))
 
   trajectoriesView = new vega.View(vega.parse(trajectoriesSpec), {
     renderer: 'svg',
@@ -90,7 +90,7 @@ const updateValues = async () => {
 
   barplotView.runAsync()
 
-  const individualInfectiousnessesScatterSpec = makeIndividualInfectiousnessScatterSpec(infectiousnesses, infectiousnessesBaseline)
+  const individualInfectiousnessesScatterSpec = makeIndividualInfectiousnessScatterSpec(infectiousnesses.slice(0, 100), infectiousnessesBaseline.slice(0, 100))
 
   scatterplotView = new vega.View(vega.parse(individualInfectiousnessesScatterSpec), {
     renderer: 'svg',
