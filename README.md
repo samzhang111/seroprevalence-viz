@@ -6,7 +6,7 @@
 * [Calculator 2](https://larremorelab.github.io/covid-calculator2)
 * [Calculator 3](https://larremorelab.github.io/covid-calculator3)
 
-These interactive calculators accompany several recent manuscripts available at [https://larremorelab.github.io/covid19testgroup](The Covid-19 Test Group).
+These interactive calculators accompany several recent manuscripts available at [The Covid-19 Test Group](https://larremorelab.github.io/covid19testgroup).
 
 ## Installation
 
